@@ -3150,7 +3150,7 @@ function initNavigation() {
   const homeItem = document.createElement('button');
   homeItem.className = 'nav-item active';
   homeItem.dataset.page = 'home';
-  homeItem.innerHTML = `<div class="ni-gem">${generateCrystalSVG('#d4a843', 'rose', 30)}</div><div class="ni-text"><span class="ni-name">Home</span><span class="ni-desc">Return to the crystal map</span></div><span class="ni-arrow">›</span>`;
+  homeItem.innerHTML = `<div class="ni-gem">${generateCrystalSVG('#d4a843', 'rose', 30)}</div><div class="ni-text"><span class="ni-name">Home</span><span class="ni-desc">Return to homepage</span></div><span class="ni-arrow">›</span>`;
   homeItem.addEventListener('click', () => { goToPage('home'); closeNav(); });
   navItems.appendChild(homeItem);
   
