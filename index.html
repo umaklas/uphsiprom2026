@@ -1,0 +1,3849 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>The Crystal Ball · Prom '26</title>
+<link href="https://fonts.googleapis.com/css2?family=Pinyon+Script&family=Cinzel:wght@400;600;900&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Italiana&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet"/>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-storage-compat.js"></script>
+<style>
+/* ═════════════════════════════════════════════════════════════════════════════
+   THE CRYSTAL BALL - PROM '26
+   A Night of Timeless Iridescence
+═════════════════════════════════════════════════════════════════════════════ */
+
+/* ─── DESIGN TOKENS ─── */
+:root{
+  --void:#010008;
+  --deep:#05040e;
+  --deeper:#03030a;
+  --text:#f5eddb;
+  --dim:rgba(245,237,219,.5);
+  --gold:#d4a843;
+  --gold2:#f5da7a;
+  --gold3:#b8922e;
+  --glow:rgba(212,168,67,.42);
+  --rose:#d4907c;
+  --aqua:#88d8f0;
+  --emerald:#6fcfaa;
+  --amethyst:#b39ddb;
+  --pink:#f07ca8;
+  --teal:#60c0b8;
+  --citrine:#ffd060;
+  --ruby:#ef7070;
+  --sapphire:#6ea8f0;
+  --crystal-white:rgba(220,240,255,.9);
+  --crystal-edge:rgba(180,220,255,.35);
+  --irid-1:#c8f0ff;
+  --irid-2:#dce8ff;
+  --irid-3:#e8d5ff;
+  --irid-4:#ffd5e5;
+}
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+html{
+  scroll-behavior:smooth;
+}
+
+body{
+  background:var(--void);
+  color:var(--text);
+  font-family:'Cormorant Garamond',serif;
+  overflow-x:hidden;
+  min-height:100vh;
+}
+
+/* ─── CANVAS LAYERS ─── */
+.canvas-layer{
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+}
+
+#bg-canvas{z-index:0;}
+#iridescence-canvas{z-index:1;mix-blend-mode:screen;opacity:.6;}
+#particle-canvas{z-index:9990;}
+
+/* ─── SCREEN GLOW EFFECT ─── */
+#screen-glow{
+  position:fixed;
+  inset:0;
+  z-index:9900;
+  pointer-events:none;
+  opacity:0;
+  transition:opacity .1s ease-in;
+}
+
+#screen-glow.flash{opacity:1;}
+
+/* ═════════════════════════════════════════════════════════════════════════════
+   CRYSTAL PALACE BACKGROUND ELEMENTS
+═════════════════════════════════════════════════════════════════════════════ */
+
+/* ─── Palace Pillars ─── */
+.palace-pillar{
+  position:fixed;
+  top:0;
+  height:100%;
+  width:80px;
+  pointer-events:none;
+  z-index:2;
+  background:linear-gradient(180deg,
+    rgba(200,220,255,.03) 0%,
+    rgba(180,200,255,.06) 20%,
+    rgba(160,180,255,.04) 50%,
+    rgba(140,160,255,.02) 80%,
+    transparent 100%);
+}
+
+.palace-pillar::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:linear-gradient(90deg,
+    transparent 0%,
+    rgba(212,168,67,.08) 20%,
+    rgba(212,168,67,.15) 50%,
+    rgba(212,168,67,.08) 80%,
+    transparent 100%);
+}
+
+.palace-pillar::after{
+  content:'';
+  position:absolute;
+  top:0;
+  left:50%;
+  transform:translateX(-50%);
+  width:2px;
+  height:100%;
+  background:linear-gradient(180deg,
+    rgba(212,168,67,.3) 0%,
+    rgba(212,168,67,.1) 30%,
+    rgba(212,168,67,.05) 60%,
+    transparent 100%);
+}
+
+.pillar-left{left:0;}
+.pillar-right{right:0;transform:scaleX(-1);}
+
+/* ─── Crystal Archway ─── */
+.crystal-arch{
+  position:fixed;
+  top:0;
+  left:50%;
+  transform:translateX(-50%);
+  width:90%;
+  height:25vh;
+  pointer-events:none;
+  z-index:2;
+  background:linear-gradient(180deg,
+    rgba(200,220,255,.04) 0%,
+    rgba(180,200,255,.02) 50%,
+    transparent 100%);
+  clip-path:polygon(0 0, 100% 0, 85% 100%, 15% 100%);
+}
+
+.crystal-arch::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:linear-gradient(180deg,
+    rgba(212,168,67,.06) 0%,
+    transparent 60%);
+  clip-path:polygon(0 0, 100% 0, 85% 100%, 15% 100%);
+}
+
+/* ─── Floating Crystal Orbs ─── */
+.crystal-orb{
+  position:fixed;
+  border-radius:50%;
+  pointer-events:none;
+  z-index:1;
+  background:radial-gradient(circle at 30% 30%,
+    rgba(255,255,255,.4) 0%,
+    rgba(200,240,255,.2) 30%,
+    rgba(180,220,255,.1) 60%,
+    transparent 100%);
+  box-shadow:
+    inset -5px -5px 15px rgba(255,255,255,.1),
+    inset 5px 5px 15px rgba(200,240,255,.15),
+    0 0 30px rgba(200,240,255,.2),
+    0 0 60px rgba(212,168,67,.1);
+  animation:orbFloat 8s ease-in-out infinite;
+}
+
+.crystal-orb::before{
+  content:'';
+  position:absolute;
+  top:20%;
+  left:25%;
+  width:25%;
+  height:15%;
+  border-radius:50%;
+  background:rgba(255,255,255,.6);
+  filter:blur(2px);
+}
+
+@keyframes orbFloat{
+  0%,100%{transform:translateY(0) rotate(0deg);}
+  50%{transform:translateY(-20px) rotate(5deg);}
+}
+
+.orb-1{width:60px;height:60px;top:15%;left:8%;animation-delay:0s;}
+.orb-2{width:40px;height:40px;top:60%;left:5%;animation-delay:2s;}
+.orb-3{width:50px;height:50px;top:25%;right:8%;animation-delay:1s;}
+.orb-4{width:35px;height:35px;top:70%;right:6%;animation-delay:3s;}
+.orb-5{width:45px;height:45px;top:45%;left:12%;animation-delay:4s;}
+
+/* ─── Light Caustics Overlay ─── */
+.caustics-overlay{
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:1;
+  background:
+    radial-gradient(ellipse at 20% 30%, rgba(200,240,255,.08) 0%, transparent 40%),
+    radial-gradient(ellipse at 80% 20%, rgba(212,168,67,.06) 0%, transparent 35%),
+    radial-gradient(ellipse at 60% 70%, rgba(180,200,255,.05) 0%, transparent 45%),
+    radial-gradient(ellipse at 30% 80%, rgba(212,168,67,.04) 0%, transparent 30%);
+  animation:causticsShift 12s ease-in-out infinite;
+}
+
+@keyframes causticsShift{
+  0%,100%{opacity:1;transform:scale(1);}
+  50%{opacity:.8;transform:scale(1.05);}
+}
+
+/* ─── Crystal Floor Reflection ─── */
+.crystal-floor{
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  height:35vh;
+  pointer-events:none;
+  z-index:1;
+  background:linear-gradient(to top,
+    rgba(20,15,40,.5) 0%,
+    rgba(30,25,60,.3) 20%,
+    rgba(40,35,80,.15) 40%,
+    rgba(212,168,67,.05) 60%,
+    transparent 100%);
+}
+
+.crystal-floor::before{
+  content:'';
+  position:absolute;
+  bottom:0;
+  left:0;
+  right:0;
+  height:100%;
+  background:repeating-linear-gradient(90deg,
+    transparent 0px,
+    rgba(212,168,67,.02) 1px,
+    transparent 2px,
+    transparent 80px);
+}
+
+/* ─── Chandelier Rays ─── */
+.chandelier{
+  position:fixed;
+  top:0;
+  left:50%;
+  transform:translateX(-50%);
+  width:100%;
+  height:100vh;
+  pointer-events:none;
+  z-index:1;
+  overflow:hidden;
+}
+
+.chandelier::before,.chandelier::after{
+  content:'';
+  position:absolute;
+  top:0;
+  left:50%;
+  width:1px;
+  height:100vh;
+  background:linear-gradient(180deg,
+    rgba(212,168,67,.25) 0%,
+    rgba(212,168,67,.1) 40%,
+    transparent 100%);
+  transform-origin:top center;
+}
+
+.chandelier::before{transform:translateX(-50%) rotate(-8deg);}
+.chandelier::after{transform:translateX(-50%) rotate(8deg);}
+
+.chandelier-ray{
+  position:fixed;
+  top:0;
+  left:50%;
+  width:1px;
+  height:100vh;
+  pointer-events:none;
+  z-index:1;
+  background:linear-gradient(180deg,
+    rgba(212,168,67,.15) 0%,
+    rgba(212,168,67,.05) 30%,
+    transparent 100%);
+  transform-origin:top center;
+}
+
+.ray-1{transform:translateX(-50%) rotate(-15deg);}
+.ray-2{transform:translateX(-50%) rotate(-5deg);}
+.ray-3{transform:translateX(-50%) rotate(5deg);}
+.ray-4{transform:translateX(-50%) rotate(15deg);}
+
+/* ─── Floating Gem Particles ─── */
+.floating-gem{
+  position:fixed;
+  pointer-events:none;
+  z-index:2;
+  font-size:1.2rem;
+  opacity:.4;
+  animation:gemFloat 10s ease-in-out infinite;
+  text-shadow:0 0 10px currentColor;
+}
+
+@keyframes gemFloat{
+  0%,100%{transform:translateY(0) rotate(0deg);opacity:.4;}
+  50%{transform:translateY(-30px) rotate(15deg);opacity:.7;}
+}
+
+.fg-1{top:20%;left:15%;color:var(--gold);animation-delay:0s;}
+.fg-2{top:50%;left:8%;color:var(--aqua);animation-delay:2s;}
+.fg-3{top:75%;left:20%;color:var(--rose);animation-delay:4s;}
+.fg-4{top:30%;right:12%;color:var(--amethyst);animation-delay:1s;}
+.fg-5{top:60%;right:18%;color:var(--emerald);animation-delay:3s;}
+.fg-6{top:85%;right:10%;color:var(--citrine);animation-delay:5s;}
+
+/* ─── Corner Crystal Ornaments ─── */
+.crystal-corner{
+  position:fixed;
+  pointer-events:none;
+  z-index:2;
+  width:150px;
+  height:150px;
+  opacity:.35;
+}
+
+.crystal-corner svg{width:100%;height:100%;}
+.cc-tl{top:0;left:0;}
+.cc-tr{top:0;right:0;transform:scaleX(-1);}
+.cc-bl{bottom:0;left:0;transform:scaleY(-1);}
+.cc-br{bottom:0;right:0;transform:scale(-1,-1);}
+
+/* ═════════════════════════════════════════════════════════════════════════════
+   INVITATION SCREEN
+═════════════════════════════════════════════════════════════════════════════ */
+#invitation{
+  position:fixed;
+  inset:0;
+  z-index:10000;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:2rem;
+  overflow:hidden;
+  background:var(--void);
+}
+
+.invitation-ring{
+  position:absolute;
+  border-radius:50%;
+  border:1px solid rgba(212,168,67,.12);
+  animation:ringExpand 9s linear infinite;
+}
+
+@keyframes ringExpand{
+  0%{transform:scale(.18);opacity:1;}
+  100%{transform:scale(3.6);opacity:0;}
+}
+
+.invitation-content{
+  position:relative;
+  z-index:2;
+}
+
+@keyframes revealUp{
+  from{opacity:0;transform:translateY(20px);}
+  to{opacity:1;transform:translateY(0);}
+}
+
+@keyframes shimmer{
+  0%{background-position:0% 50%;}
+  100%{background-position:200% 50%;}
+}
+
+.inv-subtitle{
+  font-family:'Cinzel',serif;
+  font-size:.66rem;
+  letter-spacing:.48em;
+  color:var(--gold);
+  text-transform:uppercase;
+  opacity:0;
+  animation:revealUp .9s .3s forwards;
+}
+
+.inv-school{
+  font-family:'Cinzel',serif;
+  font-size:.98rem;
+  letter-spacing:.22em;
+  color:var(--text);
+  margin:.38rem 0;
+  opacity:0;
+  animation:revealUp .9s .6s forwards;
+}
+
+.inv-the{
+  font-family:'Cinzel',serif;
+  font-size:.86rem;
+  letter-spacing:.38em;
+  color:rgba(212,168,67,.76);
+  display:block;
+  margin-top:1.5rem;
+  opacity:0;
+  animation:revealUp .9s .9s forwards;
+}
+
+.inv-crystal{
+  font-family:'Pinyon Script',cursive;
+  font-size:clamp(4.5rem,12vw,9.5rem);
+  line-height:1.1;
+  display:block;
+  padding:.06em .24em;
+  background:linear-gradient(135deg,#fff 0%,var(--gold) 22%,#dce8ff 50%,#c8f0ff 72%,var(--gold) 100%);
+  background-size:260% 260%;
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  filter:drop-shadow(0 0 26px rgba(212,168,67,.55)) drop-shadow(0 0 50px rgba(200,240,255,.2));
+  opacity:0;
+  animation:revealUp .9s 1.1s forwards,shimmer 6s 2.1s linear infinite;
+}
+
+.inv-ball{
+  font-family:'Italiana',sans-serif;
+  font-size:clamp(1rem,3vw,1.85rem);
+  letter-spacing:.3em;
+  color:var(--gold2);
+  display:block;
+  line-height:1.5;
+  margin-top:.3rem;
+  opacity:0;
+  animation:revealUp .9s 1.35s forwards;
+  filter:drop-shadow(0 0 10px rgba(212,168,67,.35));
+}
+
+.inv-tag{
+  font-family:'Cinzel',serif;
+  font-size:.6rem;
+  letter-spacing:.4em;
+  color:rgba(220,240,255,.45);
+  text-transform:uppercase;
+  margin:1.1rem 0 .38rem;
+  opacity:0;
+  animation:revealUp .9s 1.6s forwards;
+}
+
+.inv-date{
+  font-family:'Cormorant Garamond',serif;
+  font-style:italic;
+  font-size:1.06rem;
+  color:var(--text);
+  opacity:0;
+  animation:revealUp .9s 1.8s forwards;
+}
+
+.inv-venue{
+  font-family:'Cormorant Garamond',serif;
+  font-size:.84rem;
+  color:var(--dim);
+  opacity:0;
+  animation:revealUp .9s 2s forwards;
+  margin-bottom:1.6rem;
+}
+
+.inv-divider{
+  width:150px;
+  height:1px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);
+  margin:.9rem auto;
+  opacity:0;
+  animation:revealUp .9s 2.04s forwards;
+}
+
+.enter-btn{
+  font-family:'Cinzel',serif;
+  font-size:.7rem;
+  letter-spacing:.36em;
+  text-transform:uppercase;
+  color:var(--void);
+  background:linear-gradient(135deg,var(--gold),var(--gold2),var(--gold));
+  border:none;
+  padding:.9rem 2.8rem;
+  cursor:pointer;
+  clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);
+  box-shadow:0 0 26px var(--glow),0 0 50px rgba(212,168,67,.1);
+  opacity:0;
+  animation:revealUp .9s 2.2s forwards;
+  transition:transform .3s,box-shadow .3s;
+  position:relative;
+  overflow:hidden;
+}
+
+.enter-btn::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:linear-gradient(135deg,transparent,rgba(255,255,255,.3),transparent);
+  transform:translateX(-100%);
+  transition:transform .55s;
+}
+
+.enter-btn:hover::before{
+  transform:translateX(100%);
+}
+
+.enter-btn:hover{
+  transform:translateY(-3px);
+  box-shadow:0 0 48px var(--gold),0 0 75px rgba(212,168,67,.17);
+}
+
+/* ═════════════════════════════════════════════════════════════════════════════
+   MAIN SITE
+═════════════════════════════════════════════════════════════════════════════ */
+#site{
+  display:none;
+  position:relative;
+  z-index:2;
+  min-height:100vh;
+}
+
+/* ─── Navbar ─── */
+.navbar{
+  position:fixed;
+  top:0;
+  left:0;
+  right:0;
+  z-index:1200;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:.7rem 2rem;
+  background:rgba(1,0,8,.92);
+  backdrop-filter:blur(28px);
+  border-bottom:1px solid rgba(212,168,67,.16);
+  box-shadow:0 2px 40px rgba(0,0,0,.5);
+}
+
+.nav-logo{
+  display:flex;
+  align-items:center;
+  gap:.7rem;
+  cursor:pointer;
+}
+
+.nav-logo-icon{width:32px;height:32px;}
+
+.nav-logo-text{
+  font-family:'Pinyon Script',cursive;
+  font-size:1.5rem;
+  background:linear-gradient(135deg,var(--gold),var(--gold2));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  filter:drop-shadow(0 0 8px rgba(212,168,67,.4));
+}
+
+.nav-trigger{
+  display:flex;
+  align-items:center;
+  gap:.6rem;
+  cursor:pointer;
+  font-family:'Cinzel',serif;
+  font-size:.58rem;
+  letter-spacing:.3em;
+  text-transform:uppercase;
+  color:rgba(212,168,67,.7);
+  background:none;
+  border:1px solid rgba(212,168,67,.22);
+  padding:.42rem 1rem;
+  transition:all .3s;
+}
+
+.nav-trigger:hover{
+  color:var(--gold2);
+  border-color:rgba(212,168,67,.45);
+  box-shadow:0 0 18px rgba(212,168,67,.15);
+}
+
+.nav-chevron{transition:transform .3s;font-size:.7rem;}
+
+.nav-menu-open .nav-chevron{transform:rotate(180deg);}
+
+/* ─── Dropdown Navigation ─── */
+.nav-dropdown{
+  position:fixed;
+  top:0;
+  right:0;
+  bottom:0;
+  width:min(340px,92vw);
+  background:rgba(2,1,12,.97);
+  backdrop-filter:blur(30px);
+  border-left:1px solid rgba(212,168,67,.15);
+  transform:translateX(105%);
+  transition:transform .4s cubic-bezier(.4,0,.2,1);
+  z-index:1300;
+  display:flex;
+  flex-direction:column;
+  overflow-y:auto;
+  box-shadow:-8px 0 60px rgba(0,0,0,.7);
+}
+
+.nav-dropdown.open{transform:translateX(0);}
+
+.nav-dropdown-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:1.4rem 1.6rem;
+  border-bottom:1px solid rgba(212,168,67,.12);
+}
+
+.nav-dropdown-title{
+  font-family:'Cinzel',serif;
+  font-size:.62rem;
+  letter-spacing:.42em;
+  text-transform:uppercase;
+  color:rgba(212,168,67,.6);
+}
+
+.nav-close{
+  background:none;
+  border:none;
+  color:rgba(212,168,67,.6);
+  font-size:1.2rem;
+  cursor:pointer;
+  transition:color .2s;
+  padding:.2rem;
+}
+
+.nav-close:hover{color:var(--gold2);}
+
+.nav-items{flex:1;padding:.8rem 0;}
+
+.nav-item{
+  display:flex;
+  align-items:center;
+  gap:1rem;
+  padding:.9rem 1.6rem;
+  cursor:pointer;
+  border:none;
+  background:none;
+  width:100%;
+  text-align:left;
+  transition:background .2s,padding-left .25s;
+  border-left:2px solid transparent;
+  position:relative;
+}
+
+.nav-item::after{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:linear-gradient(90deg,rgba(212,168,67,.06) 0%,transparent 100%);
+  opacity:0;
+  transition:opacity .2s;
+}
+
+.nav-item:hover{padding-left:2rem;}
+.nav-item:hover::after{opacity:1;}
+.nav-item.active{border-left-color:var(--gold);background:rgba(212,168,67,.05);}
+
+.ni-gem{width:30px;height:30px;flex-shrink:0;}
+.ni-gem svg{width:100%;height:100%;display:block;}
+
+.ni-text{flex:1;}
+
+.ni-name{
+  font-family:'Cinzel',serif;
+  font-size:.62rem;
+  letter-spacing:.22em;
+  text-transform:uppercase;
+  color:rgba(212,168,67,.65);
+  display:block;
+  margin-bottom:.18rem;
+  transition:color .2s;
+}
+
+.nav-item:hover .ni-name{color:var(--gold2);}
+
+.ni-desc{
+  font-family:'Cormorant Garamond',serif;
+  font-style:italic;
+  font-size:.78rem;
+  color:var(--dim);
+  line-height:1.4;
+}
+
+.ni-arrow{
+  color:rgba(212,168,67,.3);
+  font-size:.9rem;
+  transition:all .25s;
+}
+
+.nav-item:hover .ni-arrow{
+  color:var(--gold);
+  transform:translateX(3px);
+}
+
+.nav-overlay{
+  position:fixed;
+  inset:0;
+  z-index:1250;
+  background:rgba(0,0,0,.4);
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .3s;
+  backdrop-filter:blur(2px);
+}
+
+.nav-overlay.open{opacity:1;pointer-events:all;}
+
+/* ─── Page System ─── */
+.page{
+  display:none;
+  opacity:0;
+  position:absolute;
+  top:0;
+  left:0;
+  width:100%;
+  min-height:100vh;
+  transition:opacity .35s ease;
+  padding-top:60px;
+}
+
+.page.active{
+  display:flex;
+  flex-direction:column;
+  opacity:1;
+  position:relative;
+}
+
+@keyframes pageIn{
+  from{opacity:0;transform:translateY(14px);}
+  to{opacity:1;transform:translateY(0);}
+}
+
+.page.active .page-inner{animation:pageIn .4s ease both;}
+
+#pages{position:relative;min-height:100vh;}
+
+.page-inner{flex:1;display:flex;flex-direction:column;}
+
+/* ─── Panel Bar ─── */
+.panel-bar{
+  display:flex;
+  align-items:center;
+  gap:1rem;
+  padding:.62rem 1.6rem;
+  background:rgba(1,0,8,.7);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid rgba(255,255,255,.055);
+  flex-shrink:0;
+}
+
+.panel-back{
+  font-family:'Cinzel',serif;
+  font-size:.54rem;
+  letter-spacing:.24em;
+  text-transform:uppercase;
+  background:none;
+  border:1px solid rgba(212,168,67,.22);
+  color:rgba(212,168,67,.7);
+  padding:.36rem .9rem;
+  cursor:pointer;
+  transition:all .26s;
+  white-space:nowrap;
+}
+
+.panel-back:hover{
+  background:rgba(212,168,67,.08);
+  border-color:rgba(212,168,67,.45);
+  color:var(--gold2);
+}
+
+.panel-gem-sm{width:22px;height:22px;flex-shrink:0;}
+.panel-gem-sm svg{width:100%;height:100%;}
+
+.panel-title{
+  font-family:'Cinzel',serif;
+  font-size:.65rem;
+  letter-spacing:.26em;
+  text-transform:uppercase;
+}
+
+/* ─── Footer ─── */
+.page-footer{
+  margin-top:auto;
+  flex-shrink:0;
+  border-top:1px solid rgba(212,168,67,.08);
+  padding:2rem 1.5rem;
+  text-align:center;
+  background:rgba(1,0,8,.6);
+}
+
+.footer-crystal{
+  font-family:'Pinyon Script',cursive;
+  font-size:2.4rem;
+  background:linear-gradient(135deg,var(--gold),var(--gold2));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  display:block;
+  margin-bottom:.3rem;
+}
+
+.footer-sub{
+  font-family:'Cinzel',serif;
+  font-size:.46rem;
+  letter-spacing:.34em;
+  color:rgba(212,168,67,.28);
+  text-transform:uppercase;
+}
+
+/* ═════════════════════════════════════════════════════════════════════════════
+   HOME PAGE
+═════════════════════════════════════════════════════════════════════════════ */
+#pg-home{
+  display:none;
+  flex-direction:column;
+  align-items:center;
+  padding:5rem 2rem 3rem;
+}
+
+#pg-home.active{display:flex;}
+
+#pg-home::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  z-index:0;
+  background:
+    radial-gradient(ellipse at 50% -10%,rgba(212,168,67,.12) 0%,transparent 55%),
+    radial-gradient(ellipse at 10% 20%,rgba(107,76,158,.09) 0%,transparent 42%),
+    radial-gradient(ellipse at 90% 70%,rgba(44,95,138,.09) 0%,transparent 42%);
+}
+
+.arch-left,.arch-right{
+  position:absolute;
+  top:0;
+  height:100%;
+  width:70px;
+  z-index:0;
+  pointer-events:none;
+  opacity:.18;
+}
+
+.arch-left{
+  left:0;
+  background:linear-gradient(90deg,rgba(212,168,67,.4),transparent);
+}
+
+.arch-right{
+  right:0;
+  background:linear-gradient(270deg,rgba(212,168,67,.4),transparent);
+}
+
+.home-inner{
+  position:relative;
+  z-index:3;
+  width:100%;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+
+/* ─── Title Block ─── */
+.title-block{
+  text-align:center;
+  width:100%;
+  max-width:800px;
+  margin-bottom:3.2rem;
+}
+
+.title-eyebrow{
+  font-family:'Cinzel',serif;
+  font-size:.58rem;
+  letter-spacing:.54em;
+  color:rgba(212,168,67,.65);
+  text-transform:uppercase;
+  margin-bottom:.82rem;
+}
+
+.title-the{
+  font-family:'Cinzel',serif;
+  font-size:.92rem;
+  letter-spacing:.42em;
+  color:rgba(212,168,67,.75);
+  display:block;
+  margin-bottom:.12rem;
+}
+
+.title-crystal{
+  font-family:'Pinyon Script',cursive;
+  font-size:clamp(4.8rem,13vw,10.5rem);
+  line-height:1.14;
+  display:block;
+  padding:.04em .18em .1em;
+  background:linear-gradient(135deg,#fff 0%,var(--gold) 20%,#dce8ff 48%,#c8f0ff 70%,var(--gold) 100%);
+  background-size:260% 260%;
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  filter:drop-shadow(0 0 30px rgba(212,168,67,.5)) drop-shadow(0 0 60px rgba(200,240,255,.2));
+  animation:shimmer 6s linear infinite,titleReveal 2.2s .2s ease both;
+}
+
+@keyframes titleReveal{
+  from{clip-path:inset(0 100% 0 0);opacity:0;}
+  to{clip-path:inset(0 0% 0 0);opacity:1;}
+}
+
+.title-night{
+  font-family:'Italiana',sans-serif;
+  font-size:clamp(.9rem,2.5vw,1.6rem);
+  letter-spacing:.32em;
+  color:var(--gold2);
+  display:block;
+  margin-top:.5rem;
+  filter:drop-shadow(0 0 10px rgba(212,168,67,.38));
+  animation:revealUp 1.2s 2.4s both;
+}
+
+.title-meta{
+  font-family:'Cormorant Garamond',serif;
+  font-style:italic;
+  font-size:.94rem;
+  color:var(--dim);
+  margin-top:.6rem;
+  animation:revealUp 1.2s 2.7s both;
+}
+
+.title-divider{
+  display:flex;
+  align-items:center;
+  gap:.8rem;
+  margin:1rem auto;
+  max-width:220px;
+  animation:revealUp 1.2s 2.9s both;
+}
+
+.td-line{
+  flex:1;
+  height:1px;
+}
+
+.td-line.left{background:linear-gradient(90deg,transparent,var(--gold));}
+.td-line.right{background:linear-gradient(90deg,var(--gold),transparent);}
+
+.td-gem{color:var(--gold);font-size:.82rem;}
+
+/* ─── Countdown ─── */
+.countdown{
+  display:flex;
+  gap:.75rem;
+  justify-content:center;
+  flex-wrap:wrap;
+  animation:revealUp 1.2s 3.1s both;
+}
+
+.countdown-unit{
+  background:rgba(255,255,255,.02);
+  border:1px solid rgba(212,168,67,.15);
+  padding:.7rem 1.1rem;
+  min-width:68px;
+  text-align:center;
+  clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%);
+  box-shadow:0 0 14px rgba(212,168,67,.05),inset 0 1px 0 rgba(255,255,255,.025);
+  position:relative;
+  overflow:hidden;
+}
+
+.countdown-unit::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:linear-gradient(180deg,rgba(212,168,67,.04) 0%,transparent 60%);
+}
+
+.countdown-num{
+  font-family:'Cinzel',serif;
+  font-size:1.85rem;
+  font-weight:900;
+  background:linear-gradient(135deg,#fff,var(--gold));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  line-height:1;
+  display:block;
+}
+
+.countdown-label{
+  font-family:'Cinzel',serif;
+  font-size:.44rem;
+  letter-spacing:.24em;
+  color:rgba(212,168,67,.42);
+  text-transform:uppercase;
+}
+
+/* ─── Gem Navigation Cards ─── */
+.gem-grid{
+  position:relative;
+  z-index:3;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:1.2rem 2rem;
+  width:100%;
+  max-width:840px;
+  animation:revealUp 1.2s 3.3s both;
+}
+
+.gem-card{
+  display:flex;
+  align-items:center;
+  gap:1.2rem;
+  padding:1.1rem 1.4rem;
+  background:rgba(255,255,255,.025);
+  border:1px solid rgba(255,255,255,.06);
+  backdrop-filter:blur(10px);
+  cursor:pointer;
+  position:relative;
+  overflow:hidden;
+  transition:transform .32s cubic-bezier(.34,1.56,.64,1),box-shadow .32s,background .32s;
+  will-change:transform;
+}
+
+.gem-card::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:linear-gradient(110deg,transparent 20%,rgba(255,255,255,.06) 48%,transparent 76%);
+  transform:translateX(-115%);
+  transition:transform .6s;
+}
+
+.gem-card:hover::before{transform:translateX(115%);}
+
+.gem-card:hover{
+  transform:translateY(-4px) scale(1.01);
+  background:rgba(255,255,255,.04);
+  box-shadow:0 8px 40px rgba(0,0,0,.4),0 0 30px rgba(var(--gc-rgb,212,168,67),.12);
+}
+
+.gem-card::after{
+  content:'';
+  position:absolute;
+  top:0;
+  right:0;
+  width:0;
+  height:0;
+  border-style:solid;
+  border-width:0 22px 22px 0;
+  border-color:transparent rgba(var(--gc-rgb,212,168,67),.25) transparent transparent;
+  opacity:.7;
+}
+
+.gem-icon-wrap{
+  flex-shrink:0;
+  width:56px;
+  height:56px;
+  position:relative;
+  filter:drop-shadow(0 0 7px var(--gc,var(--gold)));
+  transition:filter .32s,transform .32s;
+}
+
+.gem-card:hover .gem-icon-wrap{
+  filter:drop-shadow(0 0 16px var(--gc,var(--gold))) drop-shadow(0 0 32px var(--gc,var(--gold)));
+  transform:scale(1.12) rotate(4deg);
+}
+
+.gem-icon-wrap svg{width:100%;height:100%;display:block;}
+
+.gem-ring,.gem-ring-2{
+  position:absolute;
+  border-radius:50%;
+  border:1px solid var(--gc,var(--gold));
+  opacity:0;
+}
+
+.gem-ring{inset:-8px;animation:ringPulse 3s ease-out infinite;}
+.gem-ring-2{inset:-17px;animation:ringPulse 3s 1s ease-out infinite;}
+
+@keyframes ringPulse{
+  0%{transform:scale(.5);opacity:.8;}
+  100%{transform:scale(1.5);opacity:0;}
+}
+
+.gem-text{flex:1;min-width:0;}
+
+.gem-name{
+  font-family:'Cinzel',serif;
+  font-size:.7rem;
+  letter-spacing:.2em;
+  text-transform:uppercase;
+  color:var(--gc,var(--gold));
+  margin-bottom:.3rem;
+  transition:text-shadow .3s;
+}
+
+.gem-card:hover .gem-name{
+  text-shadow:0 0 18px var(--gc,var(--gold)),0 0 35px var(--gc,var(--gold));
+}
+
+.gem-desc{
+  font-family:'Cormorant Garamond',serif;
+  font-style:italic;
+  font-size:.85rem;
+  color:var(--dim);
+  line-height:1.45;
+}
+
+.gem-arrow{
+  flex-shrink:0;
+  color:var(--gc,var(--gold));
+  font-size:.95rem;
+  opacity:.45;
+  transition:opacity .22s,transform .22s;
+}
+
+.gem-card:hover .gem-arrow{
+  opacity:1;
+  transform:translateX(3px);
+}
+
+/* ═════════════════════════════════════════════════════════════════════════════
+   CONTENT PAGES - SHARED STYLES
+═════════════════════════════════════════════════════════════════════════════ */
+.content-wrapper{
+  max-width:1040px;
+  margin:0 auto;
+  padding:3rem 2rem;
+}
+
+.page-eyebrow{
+  font-family:'Cinzel',serif;
+  font-size:.56rem;
+  letter-spacing:.44em;
+  text-transform:uppercase;
+  margin-bottom:.58rem;
+  text-align:center;
+}
+
+.page-title{
+  font-family:'Cormorant Garamond',serif;
+  font-style:italic;
+  font-size:clamp(1.8rem,4.5vw,3.2rem);
+  text-align:center;
+  color:var(--text);
+  font-weight:300;
+  margin-bottom:.6rem;
+}
+
+.page-divider{
+  display:flex;
+  align-items:center;
+  gap:.85rem;
+  margin:1rem auto 2.2rem;
+  max-width:230px;
+}
+
+.pd-line{flex:1;height:1px;}
+.pd-gem{font-size:.74rem;}
+
+/* ─── Glass Card ─── */
+.glass-card{
+  background:rgba(210,230,255,.025);
+  border:1px solid rgba(200,225,255,.07);
+  backdrop-filter:blur(14px);
+  border-radius:1px;
+  box-shadow:
+    0 0 28px rgba(0,0,0,.38),
+    inset 0 1px 0 rgba(220,240,255,.04),
+    inset 0 -1px 0 rgba(0,0,0,.2);
+  position:relative;
+  overflow:hidden;
+  transition:transform .32s,box-shadow .32s;
+}
+
+.glass-card::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:linear-gradient(135deg,rgba(220,240,255,.03) 0%,transparent 55%);
+  pointer-events:none;
+}
+
+.glass-card::after{
+  content:'';
+  position:absolute;
+  top:0;
+  left:0;
+  right:0;
+  height:1px;
+  background:linear-gradient(90deg,transparent,rgba(220,240,255,.15),transparent);
+  pointer-events:none;
+}
+
+.glass-card:hover{
+  transform:translateY(-2px);
+  box-shadow:0 0 40px rgba(0,0,0,.4),inset 0 1px 0 rgba(220,240,255,.06);
+}
+
+/* ═════════════════════════════════════════════════════════════════════════════
+   MOOD BOARD PAGE
+═════════════════════════════════════════════════════════════════════════════ */
+.mood-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:.85rem;
+}
+
+.mood-item{
+  border-radius:1px;
+  overflow:hidden;
+  position:relative;
+  border:1px solid rgba(200,220,255,.06);
+}
+
+.mood-item:nth-child(1){grid-column:1/3;grid-row:1/3;}
+.mood-item:nth-child(4){grid-column:1/2;}
+.mood-item:nth-child(5){grid-column:2/4;}
+
+.mood-canvas{width:100%;display:block;}
+
+.mood-overlay{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:flex-end;
+  padding:.82rem;
+  background:linear-gradient(to top,rgba(1,0,8,.84) 0%,transparent 62%);
+  opacity:0;
+  transition:opacity .26s;
+}
+
+.mood-item:hover .mood-overlay{opacity:1;}
+
+.mood-label{
+  font-family:'Cinzel',serif;
+  font-size:.52rem;
+  letter-spacing:.2em;
+  text-transform:uppercase;
+}
+
+/* ═════════════════════════════════════════════════════════════════════════════
+   GALLERY PAGE
+═════════════════════════════════════════════════════════════════════════════ */
+.coming-soon{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  min-height:50vh;
+  text-align:center;
+  padding:3rem 2rem;
+}
+
+.cs-icon{
+  font-size:3.4rem;
+  animation:csFloat 4.5s ease-in-out infinite;
+  display:block;
+  margin-bottom:1.2rem;
+}
+
+@keyframes csFloat{
+  0%,100%{transform:translateY(0);}
+  50%{transform:translateY(-12px);}
+}
+
+.cs-title{
+  font-family:'Cormorant Garamond',serif;
+  font-style:italic;
+  font-size:2.2rem;
+  color:var(--text);
+  margin-bottom:.5rem;
+}
+
+.cs-subtitle{
+  font-family:'Cinzel',serif;
+  font-size:.56rem;
+  letter-spacing:.33em;
+  text-transform:uppercase;
+  margin-bottom:1.1rem;
+}
+
+.cs-desc{
+  font-family:'Cormorant Garamond',serif;
+  font-size:.94rem;
+  color:var(--dim);
+  line-height:1.75;
+}
+
+/* ═════════════════════════════════════════════════════════════════════════════
+   PROGRAM PAGE
+═════════════════════════════════════════════════════════════════════════════ */
+.program-host{
+  padding:1.1rem 1.5rem;
+  text-align:center;
+  margin-bottom:.9rem;
+}
+
+.ph-label{
+  font-family:'Cinzel',serif;
+  font-size:.52rem;
+  letter-spacing:.28em;
+  text-transform:uppercase;
+}
+
+.ph-names{
+  font-family:'IM Fell English',serif;
+  font-style:italic;
+  font-size:1.12rem;
+  color:var(--dim);
+  margin-top:.24rem;
+}
+
+.program-list{display:grid;gap:.42rem;}
+
+.program-item{
+  display:grid;
+  grid-template-columns:148px 1fr;
+  gap:1.2rem;
+  padding:.82rem 1.3rem;
+  align-items:start;
+}
+
+.pi-time{
+  font-family:'IM Fell English',serif;
+  font-style:italic;
+  font-size:.92rem;
+  letter-spacing:.03em;
+  padding-top:1px;
+  white-space:nowrap;
+}
+
+.pi-content strong{
+  display:block;
+  font-family:'Cinzel',serif;
+  font-size:.62rem;
+  letter-spacing:.13em;
+  color:var(--text);
+  text-transform:uppercase;
+  margin-bottom:.14rem;
+}
+
+.pi-content span{
+  color:var(--dim);
+  font-family:'IM Fell English',serif;
+  font-style:italic;
+  font-size:.88rem;
+}
+
+/* ═════════════════════════════════════════════════════════════════════════════
+   COMMITTEE PAGE
+═════════════════════════════════════════════════════════════════════════════ */
+.committee-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(272px,1fr));
+  gap:1.1rem;
+}
+
+.committee-card{padding:1.5rem;}
+
+.cc-dept{
+  font-family:'Cinzel',serif;
+  font-size:.5rem;
+  letter-spacing:.3em;
+  text-transform:uppercase;
+  margin-bottom:.34rem;
+}
+
+.cc-heads{
+  font-family:'Cormorant Garamond',serif;
+  font-style:italic;
+  font-size:1.25rem;
+  color:var(--text);
+}
+
+.cc-label{
+  font-family:'Cinzel',serif;
+  font-size:.44rem;
+  letter-spacing:.24em;
+  text-transform:uppercase;
+  margin-bottom:.55rem;
+  opacity:.38;
+}
+
+.cc-members{
+  list-style:none;
+  border-top:1px solid rgba(220,240,255,.055);
+  padding-top:.55rem;
+}
+
+.cc-members li{
+  font-family:'Cormorant Garamond',serif;
+  font-size:.84rem;
+  color:var(--dim);
+  padding:.14rem 0;
+  display:flex;
+  align-items:center;
+  gap:.36rem;
+}
+
+.exec-card{
+  grid-column:1/-1;
+  text-align:center;
+  padding:1.9rem;
+}
+
+.exec-label{
+  font-family:'Cinzel',serif;
+  font-size:.5rem;
+  letter-spacing:.36em;
+  text-transform:uppercase;
+  margin-bottom:.58rem;
+}
+
+.exec-names{
+  font-family:'Cormorant Garamond',serif;
+  font-style:italic;
+  font-size:1.55rem;
+  color:var(--text);
+}
+
+/* ═════════════════════════════════════════════════════════════════════════════
+   DETAILS PAGE
+═════════════════════════════════════════════════════════════════════════════ */
+.details-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(248px,1fr));
+  gap:1rem;
+}
+
+.detail-card{
+  padding:1.7rem;
+  text-align:center;
+}
+
+.detail-icon{
+  font-size:2rem;
+  display:block;
+  margin-bottom:.78rem;
+}
+
+.detail-label{
+  font-family:'Cinzel',serif;
+  font-size:.5rem;
+  letter-spacing:.35em;
+  text-transform:uppercase;
+  margin-bottom:.32rem;
+}
+
+.detail-value{
+  font-family:'Cormorant Garamond',serif;
+  font-style:italic;
+  font-size:1.15rem;
+  color:var(--text);
+}
+
+.detail-sub{
+  font-family:'Cormorant Garamond',serif;
+  font-size:.78rem;
+  color:var(--dim);
+  margin-top:.18rem;
+}
+
+/* ═════════════════════════════════════════════════════════════════════════════
+   TRANSPARENCY & SPONSORS PAGES
+═════════════════════════════════════════════════════════════════════════════ */
+.page-intro{
+  font-family:'Cormorant Garamond',serif;
+  font-style:italic;
+  font-size:.98rem;
+  color:var(--dim);
+  text-align:center;
+  max-width:520px;
+  margin:0 auto 1.8rem;
+  line-height:1.75;
+}
+
+.placeholder-text{
+  font-family:'Cormorant Garamond',serif;
+  font-style:italic;
+  color:rgba(240,230,210,.22);
+  font-size:.88rem;
+  padding:.32rem 0;
+}
+
+.tier{margin-bottom:1.5rem;}
+
+.tier-title{
+  font-family:'Cinzel',serif;
+  font-size:.54rem;
+  letter-spacing:.32em;
+  text-transform:uppercase;
+  margin-bottom:.58rem;
+  padding-bottom:.38rem;
+  border-bottom:1px solid rgba(220,240,255,.055);
+}
+
+/* ═════════════════════════════════════════════════════════════════════════════
+   TERMINAL REPORT PAGE
+═════════════════════════════════════════════════════════════════════════════ */
+.terminal-wrap{
+  font-family:'IM Fell English',serif;
+  border:1px solid rgba(110,168,240,.18);
+  padding:1.8rem;
+  background:rgba(180,210,255,.015);
+  line-height:1.85;
+}
+
+.terminal-section{margin-bottom:1.8rem;}
+
+.terminal-section h3{
+  font-family:'Cinzel',serif;
+  font-size:.62rem;
+  letter-spacing:.32em;
+  text-transform:uppercase;
+  margin-bottom:.75rem;
+  padding-bottom:.38rem;
+  border-bottom:1px solid rgba(220,240,255,.06);
+}
+
+.terminal-row{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:.5rem;
+  padding:.38rem 0;
+  border-bottom:1px solid rgba(255,255,255,.035);
+}
+
+.terminal-row:last-child{border-bottom:none;}
+
+.terminal-row span{
+  font-size:.88rem;
+  color:var(--dim);
+}
+
+.terminal-row span:first-child{color:var(--text);}
+
+/* ═════════════════════════════════════════════════════════════════════════════
+   FREEDOM WALL
+═════════════════════════════════════════════════════════════════════════════ */
+#quill-fab{
+  position:fixed;
+  right:1.6rem;
+  bottom:1.6rem;
+  z-index:2500;
+  width:54px;
+  height:54px;
+  border-radius:50%;
+  background:linear-gradient(135deg,var(--gold3),var(--gold),var(--gold2));
+  border:none;
+  cursor:pointer;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  font-size:1.3rem;
+  color:var(--void);
+  box-shadow:0 0 22px rgba(212,168,67,.42),0 0 44px rgba(212,168,67,.18);
+  transition:transform .3s,box-shadow .3s;
+  animation:fabPulse 3s ease-in-out infinite;
+}
+
+@keyframes fabPulse{
+  0%,100%{box-shadow:0 0 22px rgba(212,168,67,.42),0 0 44px rgba(212,168,67,.18);}
+  50%{box-shadow:0 0 32px rgba(212,168,67,.6),0 0 60px rgba(212,168,67,.28);}
+}
+
+#quill-fab:hover{transform:scale(1.1) rotate(-7deg);}
+#quill-fab.show{display:flex;}
+
+/* Compose Modal */
+#compose-modal{
+  position:fixed;
+  inset:0;
+  z-index:6000;
+  background:rgba(1,0,8,.96);
+  backdrop-filter:blur(24px);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:1.5rem;
+}
+
+#compose-modal.open{display:flex;}
+
+.compose-box{
+  max-width:500px;
+  width:100%;
+  padding:2.2rem;
+  position:relative;
+}
+
+.compose-title{
+  font-family:'Cinzel',serif;
+  font-size:.65rem;
+  letter-spacing:.34em;
+  text-transform:uppercase;
+  text-align:center;
+  margin-bottom:1.5rem;
+}
+
+.form-fields{display:grid;gap:.9rem;}
+
+.form-field{
+  display:flex;
+  flex-direction:column;
+  gap:.32rem;
+}
+
+.form-field label{
+  font-family:'Cinzel',serif;
+  font-size:.5rem;
+  letter-spacing:.28em;
+  text-transform:uppercase;
+}
+
+.form-field input,
+.form-field textarea{
+  background:rgba(220,240,255,.025);
+  border:1px solid rgba(220,240,255,.09);
+  color:var(--text);
+  font-family:'Cormorant Garamond',serif;
+  font-size:.94rem;
+  padding:.6rem .88rem;
+  outline:none;
+  border-radius:1px;
+  transition:border-color .26s,box-shadow .26s;
+  resize:none;
+}
+
+.form-field input:focus,
+.form-field textarea:focus{
+  border-color:var(--gold);
+  box-shadow:0 0 14px rgba(212,168,67,.1);
+}
+
+.img-label{
+  display:flex;
+  align-items:center;
+  gap:.65rem;
+  padding:.58rem .88rem;
+  background:rgba(220,240,255,.018);
+  border:1px dashed rgba(220,240,255,.1);
+  cursor:pointer;
+  transition:all .26s;
+  font-family:'Cinzel',serif;
+  font-size:.5rem;
+  letter-spacing:.2em;
+  color:var(--dim);
+}
+
+.img-label:hover{
+  border-color:rgba(212,168,67,.32);
+  color:var(--gold);
+}
+
+.img-preview{
+  width:48px;
+  height:48px;
+  object-fit:cover;
+  border:1px solid rgba(255,255,255,.1);
+  display:none;
+}
+
+.checkbox-wrap{
+  display:flex;
+  align-items:center;
+  gap:.48rem;
+  margin-top:.32rem;
+}
+
+.checkbox-wrap input[type=checkbox]{
+  accent-color:var(--gold);
+  width:12px;
+  height:12px;
+}
+
+.checkbox-wrap span{
+  font-family:'Cinzel',serif;
+  font-size:.48rem;
+  letter-spacing:.17em;
+  color:var(--dim);
+}
+
+.form-actions{
+  display:flex;
+  gap:.75rem;
+  justify-content:flex-end;
+  margin-top:1.1rem;
+}
+
+.btn-cancel,.btn-submit{
+  font-family:'Cinzel',serif;
+  font-size:.54rem;
+  letter-spacing:.26em;
+  text-transform:uppercase;
+  padding:.55rem 1.3rem;
+  cursor:pointer;
+  border:none;
+  transition:all .26s;
+}
+
+.btn-cancel{
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.09);
+  color:var(--dim);
+}
+
+.btn-cancel:hover{background:rgba(255,255,255,.09);}
+
+.btn-submit{
+  background:linear-gradient(135deg,var(--gold3),var(--gold2));
+  color:var(--void);
+  position:relative;
+  overflow:hidden;
+}
+
+.btn-submit::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:linear-gradient(135deg,transparent,rgba(255,255,255,.26),transparent);
+  transform:translateX(-100%);
+  transition:transform .5s;
+}
+
+.btn-submit:hover::before{transform:translateX(100%);}
+
+.form-status{
+  font-family:'Cinzel',serif;
+  font-size:.5rem;
+  letter-spacing:.2em;
+  color:var(--gold);
+  text-align:center;
+  margin-top:.5rem;
+  min-height:1em;
+}
+
+/* Wall Grid */
+.wall-grid{
+  columns:2;
+  gap:.95rem;
+  margin-top:.9rem;
+}
+
+@media(max-width:640px){.wall-grid{columns:1;}}
+
+.wall-post{
+  break-inside:avoid;
+  margin-bottom:.95rem;
+  padding:1.25rem;
+  cursor:pointer;
+  transition:transform .28s;
+  position:relative;
+}
+
+.wall-post:hover{transform:translateY(-3px);}
+
+.wall-post img{
+  width:100%;
+  max-height:200px;
+  object-fit:cover;
+  margin-bottom:.75rem;
+  border:1px solid rgba(220,240,255,.06);
+  display:block;
+}
+
+.post-header{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  margin-bottom:.45rem;
+}
+
+.post-title{
+  font-family:'Cinzel',serif;
+  font-size:.62rem;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  flex:1;
+}
+
+.post-delete{
+  display:none;
+  background:none;
+  border:1px solid rgba(239,112,112,.25);
+  color:rgba(239,112,112,.6);
+  font-size:.62rem;
+  padding:.16rem .42rem;
+  cursor:pointer;
+  transition:all .26s;
+  flex-shrink:0;
+  margin-left:.5rem;
+  font-family:'Cinzel',serif;
+  letter-spacing:.07em;
+}
+
+.post-delete:hover{
+  background:rgba(239,112,112,.1);
+  border-color:rgba(239,112,112,.6);
+  color:#ef9a9a;
+}
+
+.admin-mode .post-delete{display:block;}
+
+.post-content{
+  font-family:'Cormorant Garamond',serif;
+  font-size:.92rem;
+  color:var(--text);
+  line-height:1.58;
+  margin-bottom:.65rem;
+}
+
+.post-author{
+  font-family:'Cinzel',serif;
+  font-size:.46rem;
+  letter-spacing:.25em;
+  color:var(--dim);
+  text-transform:uppercase;
+}
+
+.post-gem{
+  float:right;
+  font-size:.82rem;
+  opacity:.42;
+}
+
+.admin-bar{
+  display:flex;
+  align-items:center;
+  gap:.75rem;
+  margin-bottom:1.2rem;
+  padding:.55rem 1rem;
+  background:rgba(255,255,255,.015);
+  border:1px solid rgba(255,255,255,.048);
+  justify-content:flex-end;
+}
+
+.admin-toggle{
+  font-family:'Cinzel',serif;
+  font-size:.48rem;
+  letter-spacing:.2em;
+  text-transform:uppercase;
+  background:none;
+  border:1px solid rgba(255,255,255,.09);
+  color:var(--dim);
+  padding:.3rem .75rem;
+  cursor:pointer;
+  transition:all .26s;
+}
+
+.admin-toggle.active{
+  border-color:rgba(239,112,112,.42);
+  color:#ef9a9a;
+  box-shadow:0 0 10px rgba(239,112,112,.1);
+}
+
+/* Post Modal */
+#post-modal{
+  position:fixed;
+  inset:0;
+  z-index:5000;
+  background:rgba(1,0,8,.94);
+  backdrop-filter:blur(20px);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:2rem;
+}
+
+#post-modal.open{display:flex;}
+
+.post-modal-content{
+  max-width:520px;
+  width:100%;
+  padding:2.4rem;
+  position:relative;
+  max-height:82vh;
+  overflow-y:auto;
+}
+
+.modal-close{
+  position:absolute;
+  top:.82rem;
+  right:.82rem;
+  background:none;
+  border:none;
+  font-size:1.28rem;
+  cursor:pointer;
+  opacity:.55;
+  transition:opacity .2s;
+}
+
+.modal-close:hover{opacity:1;}
+
+.modal-title{
+  font-family:'Cinzel',serif;
+  font-size:.68rem;
+  letter-spacing:.25em;
+  text-transform:uppercase;
+  margin-bottom:.88rem;
+}
+
+.modal-body{
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.1rem;
+  color:var(--text);
+  line-height:1.8;
+  margin-bottom:1.2rem;
+}
+
+.modal-author{
+  font-family:'Cinzel',serif;
+  font-size:.5rem;
+  letter-spacing:.27em;
+  color:var(--dim);
+  text-transform:uppercase;
+}
+
+.modal-img{
+  width:100%;
+  max-height:260px;
+  object-fit:cover;
+  margin-bottom:.9rem;
+  border:1px solid rgba(220,240,255,.06);
+}
+
+/* Passcode Modal */
+#passcode-modal{
+  position:fixed;
+  inset:0;
+  z-index:8000;
+  background:rgba(1,0,8,.97);
+  backdrop-filter:blur(22px);
+  display:none;
+  align-items:center;
+  justify-content:center;
+}
+
+#passcode-modal.open{display:flex;}
+
+.passcode-box{
+  max-width:380px;
+  width:100%;
+  padding:2.2rem;
+  position:relative;
+  text-align:center;
+}
+
+.passcode-title{
+  font-family:'Cinzel',serif;
+  font-size:.65rem;
+  letter-spacing:.32em;
+  color:var(--gold);
+  text-transform:uppercase;
+  margin-bottom:1.3rem;
+}
+
+.passcode-input{
+  width:100%;
+  background:rgba(220,240,255,.02);
+  border:1px solid rgba(212,168,67,.2);
+  color:var(--text);
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.1rem;
+  padding:.65rem 1rem;
+  outline:none;
+  text-align:center;
+  letter-spacing:.3em;
+  margin-bottom:.85rem;
+}
+
+.passcode-input:focus{
+  border-color:rgba(239,112,112,.42);
+  box-shadow:0 0 12px rgba(239,112,112,.08);
+}
+
+.passcode-error{
+  font-family:'Cinzel',serif;
+  font-size:.52rem;
+  letter-spacing:.17em;
+  color:#ef9a9a;
+  margin-top:.42rem;
+  min-height:.85em;
+}
+
+.passcode-actions{
+  display:flex;
+  gap:.65rem;
+  justify-content:center;
+}
+
+/* ═════════════════════════════════════════════════════════════════════════════
+   MUSIC BUTTON
+═════════════════════════════════════════════════════════════════════════════ */
+#music-btn{
+  position:fixed;
+  bottom:1.6rem;
+  left:1.6rem;
+  z-index:3000;
+  width:42px;
+  height:42px;
+  border-radius:50%;
+  background:rgba(1,0,8,.88);
+  border:1px solid rgba(212,168,67,.32);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  transition:all .3s;
+  box-shadow:0 0 18px rgba(212,168,67,.12);
+  font-size:1rem;
+}
+
+#music-btn:hover{
+  border-color:var(--gold);
+  box-shadow:0 0 28px rgba(212,168,67,.3);
+}
+
+#music-btn.muted{opacity:.45;}
+
+/* ═════════════════════════════════════════════════════════════════════════════
+   RESPONSIVE
+═════════════════════════════════════════════════════════════════════════════ */
+@media(max-width:800px){
+  .gem-grid{grid-template-columns:1fr;gap:.95rem;}
+  .mood-grid{grid-template-columns:1fr 1fr;}
+  .mood-item:nth-child(1){grid-column:1/-1;grid-row:auto;}
+  .mood-item:nth-child(5){grid-column:1/-1;}
+  .program-item{grid-template-columns:1fr;gap:.16rem;}
+  .committee-grid{grid-template-columns:1fr;}
+  .terminal-row{grid-template-columns:1fr 2fr;}
+  .navbar{padding:.6rem 1.2rem;}
+  .palace-pillar{width:40px;}
+  .crystal-orb{display:none;}
+}
+
+@media(max-width:480px){
+  .countdown-num{font-size:1.55rem;}
+  .countdown-unit{min-width:56px;padding:.58rem .75rem;}
+  .wall-grid{columns:1;}
+  .title-crystal{font-size:clamp(4rem,14vw,10.5rem);}
+  .nav-dropdown{width:100%;}
+  .palace-pillar{display:none;}
+}
+</style>
+</head>
+<body>
+
+<!-- ═════════════════════════════════════════════════════════════════════════════
+   AUDIO
+═════════════════════════════════════════════════════════════════════════════ -->
+<audio id="bg-music" loop preload="none">
+  <source src="./music.mp3" type="audio/mpeg"/>
+</audio>
+
+<!-- ═════════════════════════════════════════════════════════════════════════════
+   CANVAS LAYERS
+═════════════════════════════════════════════════════════════════════════════ -->
+<canvas id="bg-canvas" class="canvas-layer"></canvas>
+<canvas id="iridescence-canvas" class="canvas-layer"></canvas>
+<canvas id="particle-canvas" class="canvas-layer"></canvas>
+<div id="screen-glow"></div>
+
+<!-- ═════════════════════════════════════════════════════════════════════════════
+   CRYSTAL PALACE BACKGROUND ELEMENTS
+═════════════════════════════════════════════════════════════════════════════ -->
+<div class="palace-pillar pillar-left"></div>
+<div class="palace-pillar pillar-right"></div>
+<div class="crystal-arch"></div>
+
+<div class="crystal-orb orb-1"></div>
+<div class="crystal-orb orb-2"></div>
+<div class="crystal-orb orb-3"></div>
+<div class="crystal-orb orb-4"></div>
+<div class="crystal-orb orb-5"></div>
+
+<div class="caustics-overlay"></div>
+<div class="crystal-floor"></div>
+
+<div class="chandelier"></div>
+<div class="chandelier-ray ray-1"></div>
+<div class="chandelier-ray ray-2"></div>
+<div class="chandelier-ray ray-3"></div>
+<div class="chandelier-ray ray-4"></div>
+
+<div class="floating-gem fg-1">💎</div>
+<div class="floating-gem fg-2">✦</div>
+<div class="floating-gem fg-3">◈</div>
+<div class="floating-gem fg-4">◇</div>
+<div class="floating-gem fg-5">✧</div>
+<div class="floating-gem fg-6">⬥</div>
+
+<!-- Corner Crystals -->
+<div class="crystal-corner cc-tl">
+  <svg viewBox="0 0 150 150" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="ccg-main" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#f5da7a" stop-opacity=".9"/>
+        <stop offset="50%" stop-color="#c8f0ff" stop-opacity=".5"/>
+        <stop offset="100%" stop-color="#d4a843" stop-opacity=".1"/>
+      </linearGradient>
+      <linearGradient id="ccg-shine" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="transparent"/>
+        <stop offset="50%" stop-color="rgba(255,255,255,.3)"/>
+        <stop offset="100%" stop-color="transparent"/>
+      </linearGradient>
+    </defs>
+    <polygon points="0,0 60,0 0,60" fill="url(#ccg-main)" stroke="rgba(212,168,67,.4)" stroke-width=".8"/>
+    <polygon points="0,0 25,0 0,25" fill="rgba(212,168,67,.25)"/>
+    <line x1="0" y1="0" x2="45" y2="45" stroke="rgba(245,218,122,.5)" stroke-width=".6"/>
+    <line x1="12" y1="0" x2="0" y2="12" stroke="rgba(200,240,255,.4)" stroke-width=".5"/>
+    <line x1="28" y1="0" x2="0" y2="28" stroke="rgba(245,218,122,.3)" stroke-width=".5"/>
+    <line x1="45" y1="0" x2="0" y2="45" stroke="rgba(200,240,255,.2)" stroke-width=".4"/>
+    <polygon points="70,0 85,15 70,30 55,15" fill="rgba(212,168,67,.1)" stroke="rgba(212,168,67,.25)" stroke-width=".5"/>
+    <polygon points="0,70 15,85 30,70 15,55" fill="rgba(200,240,255,.08)" stroke="rgba(200,240,255,.2)" stroke-width=".5"/>
+    <line x1="0" y1="0" x2="80" y2="0" stroke="url(#ccg-shine)" stroke-width="1"/>
+    <line x1="0" y1="0" x2="0" y2="80" stroke="url(#ccg-shine)" stroke-width="1"/>
+  </svg>
+</div>
+<div class="crystal-corner cc-tr">
+  <svg viewBox="0 0 150 150" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="ccg2-main" x1="100%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#f5da7a" stop-opacity=".9"/>
+        <stop offset="50%" stop-color="#dce8ff" stop-opacity=".5"/>
+        <stop offset="100%" stop-color="#d4a843" stop-opacity=".1"/>
+      </linearGradient>
+    </defs>
+    <polygon points="150,0 90,0 150,60" fill="url(#ccg2-main)" stroke="rgba(212,168,67,.4)" stroke-width=".8"/>
+    <polygon points="150,0 125,0 150,25" fill="rgba(212,168,67,.25)"/>
+    <line x1="150" y1="0" x2="105" y2="45" stroke="rgba(245,218,122,.5)" stroke-width=".6"/>
+    <polygon points="80,0 95,15 80,30 65,15" fill="rgba(200,240,255,.1)" stroke="rgba(200,240,255,.25)" stroke-width=".5"/>
+  </svg>
+</div>
+<div class="crystal-corner cc-bl">
+  <svg viewBox="0 0 150 150" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="ccg3-main" x1="0%" y1="100%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#f5da7a" stop-opacity=".9"/>
+        <stop offset="50%" stop-color="#e8d5ff" stop-opacity=".5"/>
+        <stop offset="100%" stop-color="#d4a843" stop-opacity=".1"/>
+      </linearGradient>
+    </defs>
+    <polygon points="0,150 60,150 0,90" fill="url(#ccg3-main)" stroke="rgba(212,168,67,.4)" stroke-width=".8"/>
+    <polygon points="0,150 25,150 0,125" fill="rgba(212,168,67,.25)"/>
+    <line x1="0" y1="150" x2="45" y2="105" stroke="rgba(245,218,122,.5)" stroke-width=".6"/>
+    <polygon points="0,80 15,95 30,80 15,65" fill="rgba(232,213,255,.1)" stroke="rgba(232,213,255,.25)" stroke-width=".5"/>
+  </svg>
+</div>
+<div class="crystal-corner cc-br">
+  <svg viewBox="0 0 150 150" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="ccg4-main" x1="100%" y1="100%" x2="0%" y2="0%">
+        <stop offset="0%" stop-color="#f5da7a" stop-opacity=".9"/>
+        <stop offset="50%" stop-color="#c8f0ff" stop-opacity=".5"/>
+        <stop offset="100%" stop-color="#d4a843" stop-opacity=".1"/>
+      </linearGradient>
+    </defs>
+    <polygon points="150,150 90,150 150,90" fill="url(#ccg4-main)" stroke="rgba(212,168,67,.4)" stroke-width=".8"/>
+    <polygon points="150,150 125,150 150,125" fill="rgba(212,168,67,.25)"/>
+    <line x1="150" y1="150" x2="105" y2="105" stroke="rgba(245,218,122,.5)" stroke-width=".6"/>
+    <polygon points="150,80 135,95 120,80 135,65" fill="rgba(200,240,255,.1)" stroke="rgba(200,240,255,.25)" stroke-width=".5"/>
+  </svg>
+</div>
+
+<!-- ═════════════════════════════════════════════════════════════════════════════
+   INVITATION SCREEN
+═════════════════════════════════════════════════════════════════════════════ -->
+<div id="invitation">
+  <div class="invitation-ring" style="width:230px;height:230px;top:50%;left:50%;margin:-115px 0 0 -115px;animation-delay:0s;"></div>
+  <div class="invitation-ring" style="width:440px;height:440px;top:50%;left:50%;margin:-220px 0 0 -220px;animation-delay:2.3s;"></div>
+  <div class="invitation-ring" style="width:680px;height:680px;top:50%;left:50%;margin:-340px 0 0 -340px;animation-delay:4.6s;"></div>
+  <div class="invitation-ring" style="width:940px;height:940px;top:50%;left:50%;margin:-470px 0 0 -470px;animation-delay:6.9s;"></div>
+  
+  <div class="invitation-content">
+    <p class="inv-subtitle">You are cordially invited to</p>
+    <p class="inv-school">UP High School Iloilo</p>
+    <span class="inv-the">The</span>
+    <span class="inv-crystal">Crystal Ball</span>
+    <span class="inv-ball">A Night of Timeless Iridescence</span>
+    <div class="inv-divider"></div>
+    <p class="inv-date">April 10, 2026 · Thursday</p>
+    <p class="inv-venue">Punta Villa Resort Inc., Arevalo, Iloilo City</p>
+    <p class="inv-tag">Junior–Senior Prom</p>
+    <div class="inv-divider"></div>
+    <button class="enter-btn" id="enter-btn">Enter the Ball &nbsp;✦</button>
+  </div>
+</div>
+
+<!-- ═════════════════════════════════════════════════════════════════════════════
+   MAIN SITE
+═════════════════════════════════════════════════════════════════════════════ -->
+<div id="site">
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="nav-logo" data-page="home">
+      <div class="nav-logo-icon" id="nav-logo-gem"></div>
+      <span class="nav-logo-text">Crystal Ball</span>
+    </div>
+    <button class="nav-trigger" id="nav-trigger">
+      <span class="gem-dot" id="nav-gem-dot">💎</span>
+      <span class="nav-active-label" id="nav-active-label">Home</span>
+      <span class="nav-chevron">▾</span>
+    </button>
+  </nav>
+
+  <!-- Nav Overlay -->
+  <div class="nav-overlay" id="nav-overlay"></div>
+
+  <!-- Dropdown Panel -->
+  <div class="nav-dropdown" id="nav-dropdown">
+    <div class="nav-dropdown-header">
+      <span class="nav-dropdown-title">✦ &nbsp; Navigation &nbsp; ✦</span>
+      <button class="nav-close" id="nav-close">✕</button>
+    </div>
+    <div class="nav-items" id="nav-items"></div>
+  </div>
+
+  <!-- Pages Container -->
+  <div id="pages">
+
+    <!-- HOME PAGE -->
+    <div id="pg-home" class="page active">
+      <div class="page-inner">
+        <div class="arch-left"></div>
+        <div class="arch-right"></div>
+        <div class="home-inner" style="padding:5rem 2rem 3rem;">
+          <div class="title-block">
+            <p class="title-eyebrow">UP High School Iloilo · Junior–Senior Prom</p>
+            <span class="title-the">The</span>
+            <span class="title-crystal">Crystal Ball</span>
+            <span class="title-night">A Night of Timeless Iridescence</span>
+            <p class="title-meta">April 10, 2026 &nbsp;·&nbsp; Punta Villa Resort Inc., Arevalo, Iloilo City</p>
+            <div class="title-divider">
+              <span class="td-line left"></span>
+              <span class="td-gem">💎</span>
+              <span class="td-line right"></span>
+            </div>
+            <div class="countdown">
+              <div class="countdown-unit">
+                <span class="countdown-num" id="cd-d">00</span>
+                <span class="countdown-label">Days</span>
+              </div>
+              <div class="countdown-unit">
+                <span class="countdown-num" id="cd-h">00</span>
+                <span class="countdown-label">Hours</span>
+              </div>
+              <div class="countdown-unit">
+                <span class="countdown-num" id="cd-m">00</span>
+                <span class="countdown-label">Min</span>
+              </div>
+              <div class="countdown-unit">
+                <span class="countdown-num" id="cd-s">00</span>
+                <span class="countdown-label">Sec</span>
+              </div>
+            </div>
+          </div>
+          <div class="gem-grid" id="gem-grid"></div>
+        </div>
+        <footer class="page-footer">
+          <span class="footer-crystal">The Crystal Ball</span>
+          <p class="footer-sub">UP High School Iloilo · Junior–Senior Prom · April 10, 2026</p>
+        </footer>
+      </div>
+    </div>
+
+    <!-- MOOD BOARD PAGE -->
+    <div id="pg-moodboard" class="page">
+      <div class="page-inner">
+        <div class="panel-bar">
+          <button class="panel-back" data-page="home">← Home</button>
+          <div class="panel-gem-sm" id="pgi-moodboard"></div>
+          <span class="panel-title" style="color:var(--rose)">Mood Board</span>
+        </div>
+        <div class="content-wrapper">
+          <p class="page-eyebrow" style="color:var(--rose)">✦ &nbsp;Aesthetic Direction&nbsp; ✦</p>
+          <h2 class="page-title">Mood Board</h2>
+          <div class="page-divider">
+            <span class="pd-line" style="background:linear-gradient(90deg,transparent,var(--rose))"></span>
+            <span class="pd-gem" style="color:var(--rose)">◈</span>
+            <span class="pd-line" style="background:linear-gradient(90deg,var(--rose),transparent)"></span>
+          </div>
+          <div class="mood-grid" id="mood-grid"></div>
+        </div>
+        <footer class="page-footer">
+          <span class="footer-crystal">The Crystal Ball</span>
+          <p class="footer-sub">UP High School Iloilo · Junior–Senior Prom · April 10, 2026</p>
+        </footer>
+      </div>
+    </div>
+
+    <!-- GALLERY PAGE -->
+    <div id="pg-gallery" class="page">
+      <div class="page-inner">
+        <div class="panel-bar">
+          <button class="panel-back" data-page="home">← Home</button>
+          <span class="panel-title" style="color:var(--aqua)">Gallery</span>
+        </div>
+        <div class="content-wrapper">
+          <p class="page-eyebrow" style="color:var(--aqua)">✦ &nbsp;Memories in Crystal&nbsp; ✦</p>
+          <h2 class="page-title">Gallery</h2>
+          <div class="page-divider">
+            <span class="pd-line" style="background:linear-gradient(90deg,transparent,var(--aqua))"></span>
+            <span class="pd-gem" style="color:var(--aqua)">◈</span>
+            <span class="pd-line" style="background:linear-gradient(90deg,var(--aqua),transparent)"></span>
+          </div>
+          <div class="glass-card coming-soon">
+            <span class="cs-icon">💠</span>
+            <p class="cs-title">Coming Soon</p>
+            <p class="cs-subtitle" style="color:var(--aqua)">✦ &nbsp;Gallery Walk&nbsp; ✦</p>
+            <p class="cs-desc">Photos from the evening will be posted here after April 10.<br/>Scroll through memories of <em>The Crystal Ball.</em></p>
+          </div>
+        </div>
+        <footer class="page-footer">
+          <span class="footer-crystal">The Crystal Ball</span>
+          <p class="footer-sub">UP High School Iloilo · Junior–Senior Prom · April 10, 2026</p>
+        </footer>
+      </div>
+    </div>
+
+    <!-- PROGRAM PAGE -->
+    <div id="pg-program" class="page">
+      <div class="page-inner">
+        <div class="panel-bar">
+          <button class="panel-back" data-page="home">← Home</button>
+          <span class="panel-title" style="color:var(--emerald)">Program Flow</span>
+        </div>
+        <div class="content-wrapper" id="program-content"></div>
+        <footer class="page-footer">
+          <span class="footer-crystal">The Crystal Ball</span>
+          <p class="footer-sub">UP High School Iloilo · Junior–Senior Prom · April 10, 2026</p>
+        </footer>
+      </div>
+    </div>
+
+    <!-- COMMITTEE PAGE -->
+    <div id="pg-committee" class="page">
+      <div class="page-inner">
+        <div class="panel-bar">
+          <button class="panel-back" data-page="home">← Home</button>
+          <span class="panel-title" style="color:var(--amethyst)">Prom Committee</span>
+        </div>
+        <div class="content-wrapper" id="committee-content"></div>
+        <footer class="page-footer">
+          <span class="footer-crystal">The Crystal Ball</span>
+          <p class="footer-sub">UP High School Iloilo · Junior–Senior Prom · April 10, 2026</p>
+        </footer>
+      </div>
+    </div>
+
+    <!-- DETAILS PAGE -->
+    <div id="pg-details" class="page">
+      <div class="page-inner">
+        <div class="panel-bar">
+          <button class="panel-back" data-page="home">← Home</button>
+          <span class="panel-title" style="color:var(--pink)">Event Details</span>
+        </div>
+        <div class="content-wrapper" id="details-content"></div>
+        <footer class="page-footer">
+          <span class="footer-crystal">The Crystal Ball</span>
+          <p class="footer-sub">UP High School Iloilo · Junior–Senior Prom · April 10, 2026</p>
+        </footer>
+      </div>
+    </div>
+
+    <!-- TRANSPARENCY PAGE -->
+    <div id="pg-transparency" class="page">
+      <div class="page-inner">
+        <div class="panel-bar">
+          <button class="panel-back" data-page="home">← Home</button>
+          <span class="panel-title" style="color:var(--teal)">Transparency Board</span>
+        </div>
+        <div class="content-wrapper">
+          <p class="page-eyebrow" style="color:var(--teal)">✦ &nbsp;Accountability &amp; Openness&nbsp; ✦</p>
+          <h2 class="page-title">Transparency Board</h2>
+          <div class="page-divider">
+            <span class="pd-line" style="background:linear-gradient(90deg,transparent,var(--teal))"></span>
+            <span class="pd-gem" style="color:var(--teal)">◈</span>
+            <span class="pd-line" style="background:linear-gradient(90deg,var(--teal),transparent)"></span>
+          </div>
+          <p class="page-intro">In the spirit of honesty and accountability, the Prom Executive Committee is dedicated to the full transparency of Prom '26. All collections, allocations, expenditures, and processes will be published here.</p>
+          <div class="glass-card" style="padding:1.8rem;border-color:rgba(96,192,184,.15)">
+            <p class="placeholder-text">✦ &nbsp;Financial report will be posted upon completion of procurement&nbsp; ✦</p>
+          </div>
+        </div>
+        <footer class="page-footer">
+          <span class="footer-crystal">The Crystal Ball</span>
+          <p class="footer-sub">UP High School Iloilo · Junior–Senior Prom · April 10, 2026</p>
+        </footer>
+      </div>
+    </div>
+
+    <!-- SPONSORS PAGE -->
+    <div id="pg-sponsors" class="page">
+      <div class="page-inner">
+        <div class="panel-bar">
+          <button class="panel-back" data-page="home">← Home</button>
+          <span class="panel-title" style="color:var(--citrine)">Sponsors &amp; Suppliers</span>
+        </div>
+        <div class="content-wrapper">
+          <p class="page-eyebrow" style="color:var(--citrine)">✦ &nbsp;Our Generous Sponsors&nbsp; ✦</p>
+          <h2 class="page-title">Sponsors &amp; Suppliers</h2>
+          <div class="page-divider">
+            <span class="pd-line" style="background:linear-gradient(90deg,transparent,var(--citrine))"></span>
+            <span class="pd-gem" style="color:var(--citrine)">◈</span>
+            <span class="pd-line" style="background:linear-gradient(90deg,var(--citrine),transparent)"></span>
+          </div>
+          <p class="page-intro">We extend our deepest gratitude to the individuals and establishments who made this magical evening possible.</p>
+          <div class="glass-card" style="padding:2rem;border-color:rgba(255,208,96,.12)">
+            <div class="tier">
+              <p class="tier-title" style="color:var(--citrine)">💎 &nbsp;Fmr. Associate Justice Francis Jardeleza</p>
+              <p class="placeholder-text">Friends of UP Visayas High School Foundation</p>
+            </div>
+            <div class="tier">
+              <p class="tier-title" style="color:var(--rose)">🌹 &nbsp;Dr. Marovi Ascalon-Celis</p>
+              <p class="placeholder-text">iAmUPHi Alumni Association, Inc.</p>
+            </div>
+            <div class="tier">
+              <p class="tier-title" style="color:#c0c0c0">✦ &nbsp;Mr. Chris Montaño</p>
+              <p class="placeholder-text">UPHSI Parent-Teacher Association</p>
+            </div>
+            <div class="tier" style="margin-bottom:0">
+              <p class="tier-title" style="color:rgba(255,208,96,.45)">◇ &nbsp;Suppliers &amp; Partners</p>
+              <p class="placeholder-text">To be announced</p>
+            </div>
+          </div>
+        </div>
+        <footer class="page-footer">
+          <span class="footer-crystal">The Crystal Ball</span>
+          <p class="footer-sub">UP High School Iloilo · Junior–Senior Prom · April 10, 2026</p>
+        </footer>
+      </div>
+    </div>
+
+    <!-- FREEDOM WALL PAGE -->
+    <div id="pg-freedom" class="page">
+      <div class="page-inner">
+        <div class="panel-bar">
+          <button class="panel-back" data-page="home">← Home</button>
+          <span class="panel-title" style="color:var(--ruby)">Freedom Wall</span>
+        </div>
+        <div class="content-wrapper">
+          <p class="page-eyebrow" style="color:var(--ruby)">✦ &nbsp;Leave Your Mark&nbsp; ✦</p>
+          <h2 class="page-title">Freedom Wall</h2>
+          <div class="page-divider">
+            <span class="pd-line" style="background:linear-gradient(90deg,transparent,var(--ruby))"></span>
+            <span class="pd-gem" style="color:var(--ruby)">◈</span>
+            <span class="pd-line" style="background:linear-gradient(90deg,var(--ruby),transparent)"></span>
+          </div>
+          <p class="page-intro">Pour your heart out. Tap the golden quill to write. Every word becomes part of this night's legacy.</p>
+          <div class="admin-bar glass-card">
+            <span style="font-family:'Cinzel',serif;font-size:.48rem;letter-spacing:.18em;color:var(--dim)">ADMIN</span>
+            <button class="admin-toggle" id="admin-toggle">Manage Posts</button>
+          </div>
+          <div class="wall-grid" id="wall-grid"></div>
+        </div>
+        <footer class="page-footer">
+          <span class="footer-crystal">The Crystal Ball</span>
+          <p class="footer-sub">UP High School Iloilo · Junior–Senior Prom · April 10, 2026</p>
+        </footer>
+      </div>
+    </div>
+
+    <!-- TERMINAL REPORT PAGE -->
+    <div id="pg-terminal" class="page">
+      <div class="page-inner">
+        <div class="panel-bar">
+          <button class="panel-back" data-page="home">← Home</button>
+          <span class="panel-title" style="color:var(--sapphire)">Terminal Report</span>
+        </div>
+        <div class="content-wrapper">
+          <p class="page-eyebrow" style="color:var(--sapphire)">✦ &nbsp;Official Records&nbsp; ✦</p>
+          <h2 class="page-title">Terminal Report</h2>
+          <div class="page-divider">
+            <span class="pd-line" style="background:linear-gradient(90deg,transparent,var(--sapphire))"></span>
+            <span class="pd-gem" style="color:var(--sapphire)">◈</span>
+            <span class="pd-line" style="background:linear-gradient(90deg,var(--sapphire),transparent)"></span>
+          </div>
+          <p class="page-intro">The official post-event terminal report of the UP High School Iloilo Junior–Senior Prom 2026.</p>
+          <div class="glass-card terminal-wrap" style="border-color:rgba(110,168,240,.16)">
+            <div class="terminal-section">
+              <h3 style="color:var(--sapphire)">✦ Event Summary</h3>
+              <div class="terminal-row"><span>Event Name</span><span>The Crystal Ball</span><span></span></div>
+              <div class="terminal-row"><span>Date</span><span>April 10, 2026</span><span>Thursday</span></div>
+              <div class="terminal-row"><span>Venue</span><span>Punta Villa Resort Inc.</span><span>Arevalo, Iloilo City</span></div>
+              <div class="terminal-row"><span>Occasion</span><span>Junior–Senior Prom</span><span>UP High School Iloilo</span></div>
+            </div>
+            <div class="terminal-section">
+              <h3 style="color:var(--sapphire)">✦ Financial Summary</h3>
+              <p class="placeholder-text" style="text-align:center;padding:2rem;">Financial summary will be posted here after the event. ✦</p>
+            </div>
+            <div class="terminal-section">
+              <h3 style="color:var(--sapphire)">✦ Attendance &amp; Notes</h3>
+              <p class="placeholder-text" style="text-align:center;padding:2rem;">Attendance records and committee notes will be posted here. ✦</p>
+            </div>
+            <div class="terminal-section" style="margin-bottom:0">
+              <h3 style="color:var(--sapphire)">✦ Official Documents</h3>
+              <p class="placeholder-text" style="text-align:center;padding:2rem;">Uploaded documents will appear here after the event. ✦</p>
+            </div>
+          </div>
+        </div>
+        <footer class="page-footer">
+          <span class="footer-crystal">The Crystal Ball</span>
+          <p class="footer-sub">UP High School Iloilo · Junior–Senior Prom · April 10, 2026</p>
+        </footer>
+      </div>
+    </div>
+
+  </div><!-- /pages -->
+</div><!-- /site -->
+
+<!-- ═════════════════════════════════════════════════════════════════════════════
+   MODALS
+═════════════════════════════════════════════════════════════════════════════ -->
+
+<!-- Compose Modal -->
+<div id="compose-modal">
+  <div class="glass-card compose-box">
+    <p class="compose-title" style="color:var(--ruby)">✦ &nbsp;Write on the Wall&nbsp; ✦</p>
+    <div class="form-fields">
+      <div class="form-field">
+        <label style="color:var(--ruby)">Title</label>
+        <input type="text" id="fw-title" placeholder="Give your message a title…" maxlength="80"/>
+      </div>
+      <div class="form-field">
+        <label style="color:var(--ruby)">Message</label>
+        <textarea id="fw-message" rows="4" placeholder="Write your message here…" maxlength="600"></textarea>
+      </div>
+      <div class="form-field">
+        <label style="color:var(--ruby)">Photo (optional)</label>
+        <label class="img-label" for="fw-img-input">
+          <span id="fw-img-icon">📷</span>
+          <span id="fw-img-txt">Tap to attach a photo</span>
+          <img id="fw-img-preview" class="img-preview" alt="preview"/>
+        </label>
+        <input type="file" id="fw-img-input" accept="image/*" style="display:none"/>
+      </div>
+      <div class="form-field">
+        <label style="color:var(--ruby)">Name</label>
+        <input type="text" id="fw-name" placeholder="Your name…" maxlength="60"/>
+        <div class="checkbox-wrap">
+          <input type="checkbox" id="fw-anon"/>
+          <span>Post anonymously</span>
+        </div>
+      </div>
+    </div>
+    <div class="form-actions">
+      <button class="btn-cancel" id="compose-cancel">Cancel</button>
+      <button class="btn-submit" id="compose-submit">Post to Wall &nbsp;✦</button>
+    </div>
+    <p class="form-status" id="compose-status"></p>
+  </div>
+</div>
+
+<!-- Post Modal -->
+<div id="post-modal">
+  <div class="glass-card post-modal-content">
+    <button class="modal-close" id="post-modal-close">✕</button>
+    <img id="modal-img" class="modal-img" style="display:none" alt=""/>
+    <p class="modal-title" id="modal-title"></p>
+    <p class="modal-body" id="modal-body"></p>
+    <p class="modal-author" id="modal-author"></p>
+  </div>
+</div>
+
+<!-- Passcode Modal -->
+<div id="passcode-modal">
+  <div class="glass-card passcode-box">
+    <p class="passcode-title">✦ &nbsp;Admin Verification&nbsp; ✦</p>
+    <p style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.9rem;color:var(--dim);margin-bottom:1rem;line-height:1.6;">Enter the admin passcode to delete this post.</p>
+    <input class="passcode-input" type="password" id="passcode-input" placeholder="· · · · · ·"/>
+    <p class="passcode-error" id="passcode-error"></p>
+    <div class="passcode-actions">
+      <button class="btn-cancel" id="passcode-cancel">Cancel</button>
+      <button class="btn-submit" id="passcode-confirm" style="background:linear-gradient(135deg,#ef7070,#ef9a9a);">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═════════════════════════════════════════════════════════════════════════════
+   FLOATING ACTION BUTTONS
+═════════════════════════════════════════════════════════════════════════════ -->
+<button id="music-btn" title="Toggle music">🎵</button>
+<button id="quill-fab" title="Write a message">🪶</button>
+
+<!-- ═════════════════════════════════════════════════════════════════════════════
+   JAVASCRIPT
+═════════════════════════════════════════════════════════════════════════════ -->
+<script>
+/* ═════════════════════════════════════════════════════════════════════════════
+   THE CRYSTAL BALL - PROM '26
+   JavaScript Implementation
+═════════════════════════════════════════════════════════════════════════════ */
+
+/* ─── FIREBASE CONFIGURATION ─── */
+const firebaseConfig = {
+  apiKey: "AIzaSyBL3czKykRUgVzch9Y8b2QOuyR8gb1J-RQ",
+  authDomain: "uphsi-prom-2026.firebaseapp.com",
+  databaseURL: "https://uphsi-prom-2026-default-rtdb.firebaseio.com",
+  projectId: "uphsi-prom-2026",
+  storageBucket: "uphsi-prom-2026.firebasestorage.app",
+  messagingSenderId: "397388481670",
+  appId: "1:397388481670:web:dfefcbab215d49b1203d07"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+const msgRef = db.ref('freedomWall/messages');
+
+/* ─── GLOBAL STATE ─── */
+const ADMIN_PASSCODE = 'crystal2026';
+let wallPosts = [];
+let adminMode = false;
+let pendingDeleteKey = null;
+let selectedImgDataUrl = null;
+let currentPage = 'home';
+let musicPlaying = false;
+let fwInitialized = false;
+
+const GEM_ICONS = ['💎','✦','◈','◇','✧','⬥','🔮','🌟'];
+
+/* ─── GEM DEFINITIONS ─── */
+const GEMS = [
+  {id: 'moodboard', label: 'Mood Board', color: '#d4907c', rgb: '212,144,124', shape: 'rose', delay: '0s', dur: '5.2s', desc: 'The iridescent aesthetic palette and vision of the Crystal Ball.', gem: '🌹'},
+  {id: 'gallery', label: 'Gallery', color: '#88d8f0', rgb: '136,216,240', shape: 'aq', delay: '.4s', dur: '4.8s', desc: 'A gallery walk through the memories of April 10.', gem: '💠'},
+  {id: 'program', label: 'Program Flow', color: '#6fcfaa', rgb: '111,207,170', shape: 'em', delay: '.8s', dur: '5.5s', desc: 'The full evening itinerary from grand entrance to last dance.', gem: '🟩'},
+  {id: 'committee', label: 'Prom Committee', color: '#b39ddb', rgb: '179,157,219', shape: 'am', delay: '1.2s', dur: '4.6s', desc: 'The architects of magic. The heads and every member.', gem: '💜'},
+  {id: 'details', label: 'Event Details', color: '#f07ca8', rgb: '240,124,168', shape: 'pink', delay: '1.6s', dur: '5.9s', desc: 'Date, time, venue, and dress code for the night.', gem: '🌸'},
+  {id: 'transparency', label: 'Transparency', color: '#60c0b8', rgb: '96,192,184', shape: 'tour', delay: '2s', dur: '5.3s', desc: 'Full financial transparenc. Every peso openly accounted for.', gem: '🔵'},
+  {id: 'sponsors', label: 'Sponsors', color: '#ffd060', rgb: '255,208,96', shape: 'cit', delay: '2.4s', dur: '4.9s', desc: 'Our generous sponsors who helped make the Crystal Ball a reality.', gem: '⭐'},
+  {id: 'freedom', label: 'Freedom Wall', color: '#ef7070', rgb: '239,112,112', shape: 'ruby', delay: '2.8s', dur: '5.7s', desc: 'Leave your mark. A message, a photo, your name in stars.', gem: '❤️'},
+  {id: 'terminal', label: 'Terminal Report', color: '#6ea8f0', rgb: '110,168,240', shape: 'sap', delay: '3.2s', dur: '5s', desc: 'Official post-event terminal report and documents.', gem: '📋'}
+];
+
+const PAGE_LABELS = {
+  home: 'Home', moodboard: 'Mood Board', gallery: 'Gallery', program: 'Program',
+  committee: 'Prom Committee', details: 'Event Details', transparency: 'Transparency Board',
+  sponsors: 'Sponsors', freedom: 'Freedom Wall', terminal: 'Terminal Report'
+};
+
+const PAGE_GEMS = {
+  home: '💎', moodboard: '🌹', gallery: '💠', program: '🟩', committee: '💜',
+  details: '🌸', transparency: '🔵', sponsors: '⭐', freedom: '❤️', terminal: '📋'
+};
+
+/* ═════════════════════════════════════════════════════════════════════════════
+   UTILITY FUNCTIONS
+═════════════════════════════════════════════════════════════════════════════ */
+function lighten(hex, amount) {
+  const r = Math.min(255, parseInt(hex.slice(1,3), 16) + Math.round(255 * amount));
+  const g = Math.min(255, parseInt(hex.slice(3,5), 16) + Math.round(255 * amount));
+  const b = Math.min(255, parseInt(hex.slice(5,7), 16) + Math.round(255 * amount));
+  return '#' + [r,g,b].map(v => v.toString(16).padStart(2,'0')).join('');
+}
+
+function darken(hex, amount) {
+  const r = Math.max(0, parseInt(hex.slice(1,3), 16) - Math.round(255 * amount));
+  const g = Math.max(0, parseInt(hex.slice(3,5), 16) - Math.round(255 * amount));
+  const b = Math.max(0, parseInt(hex.slice(5,7), 16) - Math.round(255 * amount));
+  return '#' + [r,g,b].map(v => v.toString(16).padStart(2,'0')).join('');
+}
+
+function escapeHtml(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+/* ═════════════════════════════════════════════════════════════════════════════
+   CRYSTAL GEM SVG GENERATOR
+═════════════════════════════════════════════════════════════════════════════ */
+function generateCrystalSVG(color, shape, size = 80) {
+  const id = 'cg' + Math.random().toString(36).slice(2, 9);
+  const cl = lighten(color, .42), cm = lighten(color, .18), cd = darken(color, .28);
+  
+  const defs = `<defs>
+    <linearGradient id="${id}a" x1="20%" y1="0%" x2="80%" y2="100%">
+      <stop offset="0%" stop-color="${cl}"/>
+      <stop offset="35%" stop-color="${color}"/>
+      <stop offset="100%" stop-color="${cd}"/>
+    </linearGradient>
+    <linearGradient id="${id}b" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="${cd}" stop-opacity=".6"/>
+      <stop offset="40%" stop-color="${cl}" stop-opacity=".9"/>
+      <stop offset="100%" stop-color="${cd}" stop-opacity=".5"/>
+    </linearGradient>
+    <radialGradient id="${id}c" cx="35%" cy="25%" r="55%">
+      <stop offset="0%" stop-color="white" stop-opacity=".55"/>
+      <stop offset="60%" stop-color="${cl}" stop-opacity=".15"/>
+      <stop offset="100%" stop-color="transparent"/>
+    </radialGradient>
+  </defs>`;
+
+  const shapes = {
+    rose: `<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">${defs}
+      <circle cx="40" cy="40" r="36" fill="url(#${id}a)"/>
+      <polygon points="40,10 55,25 50,40 40,44 30,40 25,25" fill="url(#${id}b)" opacity=".7"/>
+      <polygon points="40,10 55,25 68,18 58,5" fill="${cm}" opacity=".55"/>
+      <polygon points="40,10 25,25 12,18 22,5" fill="${cl}" opacity=".4"/>
+      <polygon points="55,25 68,35 72,22 68,18" fill="${cm}" opacity=".4"/>
+      <polygon points="25,25 12,35 8,22 12,18" fill="${cl}" opacity=".35"/>
+      <polygon points="55,25 50,40 65,48 72,35" fill="${cd}" opacity=".5"/>
+      <polygon points="25,25 30,40 15,48 8,35" fill="${color}" opacity=".4"/>
+      <polygon points="50,40 40,44 40,72 55,58" fill="${cd}" opacity=".6"/>
+      <polygon points="30,40 40,44 40,72 25,58" fill="${darken(color,.15)}" opacity=".5"/>
+      <ellipse cx="35" cy="22" rx="8" ry="5" fill="white" opacity=".32" transform="rotate(-20,35,22)"/>
+      <circle cx="40" cy="40" r="36" fill="url(#${id}c)"/>
+      <circle cx="40" cy="40" r="36" fill="none" stroke="${cl}" stroke-width=".8" opacity=".55"/>
+    </svg>`,
+    aq: `<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">${defs}
+      <polygon points="24,8 56,8 72,24 72,56 56,72 24,72 8,56 8,24" fill="url(#${id}a)"/>
+      <polygon points="28,18 52,18 64,30 64,50 52,62 28,62 16,50 16,30" fill="url(#${id}b)" opacity=".65"/>
+      <polygon points="24,8 28,18 16,30 8,24" fill="${cl}" opacity=".45"/>
+      <polygon points="56,8 52,18 64,30 72,24" fill="${cm}" opacity=".38"/>
+      <polygon points="8,56 16,50 28,62 24,72" fill="${darken(color,.1)}" opacity=".5"/>
+      <polygon points="72,56 64,50 52,62 56,72" fill="${cd}" opacity=".45"/>
+      <polygon points="28,12 52,12 60,20 20,20" fill="${cl}" opacity=".3"/>
+      <ellipse cx="38" cy="22" rx="10" ry="4" fill="white" opacity=".28" transform="rotate(-5,38,22)"/>
+      <polygon points="24,8 56,8 72,24 72,56 56,72 24,72 8,56 8,24" fill="url(#${id}c)" opacity=".7"/>
+      <polygon points="24,8 56,8 72,24 72,56 56,72 24,72 8,56 8,24" fill="none" stroke="${cl}" stroke-width=".75" opacity=".6"/>
+    </svg>`,
+    em: `<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">${defs}
+      <polygon points="18,10 62,10 74,20 74,60 62,70 18,70 6,60 6,20" fill="url(#${id}a)"/>
+      <rect x="16" y="20" width="48" height="40" fill="url(#${id}b)" opacity=".6"/>
+      <polygon points="18,10 22,20 16,20 6,20" fill="${cl}" opacity=".4"/>
+      <polygon points="62,10 58,20 64,20 74,20" fill="${cm}" opacity=".38"/>
+      <polygon points="18,70 22,60 6,60" fill="${color}" opacity=".45"/>
+      <polygon points="62,70 58,60 74,60" fill="${cd}" opacity=".42"/>
+      <rect x="20" y="24" width="40" height="32" fill="none" stroke="white" stroke-width=".4" opacity=".18"/>
+      <rect x="24" y="28" width="32" height="24" fill="none" stroke="white" stroke-width=".3" opacity=".12"/>
+      <ellipse cx="35" cy="25" rx="12" ry="4" fill="white" opacity=".26" transform="rotate(-5,35,25)"/>
+      <polygon points="18,10 62,10 74,20 74,60 62,70 18,70 6,60 6,20" fill="url(#${id}c)" opacity=".65"/>
+      <polygon points="18,10 62,10 74,20 74,60 62,70 18,70 6,60 6,20" fill="none" stroke="${cl}" stroke-width=".75" opacity=".55"/>
+    </svg>`,
+    am: `<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">${defs}
+      <polygon points="40,4 70,22 70,58 40,76 10,58 10,22" fill="url(#${id}a)"/>
+      <polygon points="40,18 60,29 60,51 40,62 20,51 20,29" fill="url(#${id}b)" opacity=".68"/>
+      <polygon points="40,4 70,22 60,29 40,18 20,29 10,22" fill="${cl}" opacity=".4"/>
+      <polygon points="40,62 60,51 70,58 40,76 10,58 20,51" fill="${cd}" opacity=".55"/>
+      <polygon points="70,22 70,58 60,51 60,29" fill="${cm}" opacity=".42"/>
+      <polygon points="10,22 10,58 20,51 20,29" fill="${cl}" opacity=".35"/>
+      <ellipse cx="35" cy="22" rx="10" ry="5" fill="white" opacity=".3" transform="rotate(-15,35,22)"/>
+      <line x1="40" y1="4" x2="40" y2="76" stroke="white" stroke-width=".4" opacity=".18"/>
+      <polygon points="40,4 70,22 70,58 40,76 10,58 10,22" fill="url(#${id}c)" opacity=".7"/>
+      <polygon points="40,4 70,22 70,58 40,76 10,58 10,22" fill="none" stroke="${cl}" stroke-width=".85" opacity=".6"/>
+    </svg>`,
+    pink: `<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">${defs}
+      <path d="M40,74 Q8,55 10,30 Q12,8 40,6 Q68,8 70,30 Q72,55 40,74Z" fill="url(#${id}a)"/>
+      <path d="M40,6 Q65,10 68,28 L40,20Z" fill="${cl}" opacity=".42"/>
+      <path d="M40,6 Q15,10 12,28 L40,20Z" fill="${cm}" opacity=".35"/>
+      <path d="M68,28 Q72,46 60,60 L40,20Z" fill="${color}" opacity=".38"/>
+      <path d="M12,28 Q8,46 20,60 L40,20Z" fill="${cl}" opacity=".32"/>
+      <path d="M60,60 Q50,72 40,74 Q30,72 20,60 L40,20Z" fill="${cd}" opacity=".5"/>
+      <ellipse cx="40" cy="30" rx="16" ry="12" fill="url(#${id}b)" opacity=".6"/>
+      <ellipse cx="35" cy="20" rx="8" ry="4.5" fill="white" opacity=".3" transform="rotate(-15,35,20)"/>
+      <path d="M40,74 Q8,55 10,30 Q12,8 40,6 Q68,8 70,30 Q72,55 40,74Z" fill="url(#${id}c)" opacity=".65"/>
+      <path d="M40,74 Q8,55 10,30 Q12,8 40,6 Q68,8 70,30 Q72,55 40,74Z" fill="none" stroke="${cl}" stroke-width=".75" opacity=".55"/>
+    </svg>`,
+    tour: `<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">${defs}
+      <polygon points="40,5 76,70 4,70" fill="url(#${id}a)"/>
+      <polygon points="40,18 65,62 15,62" fill="url(#${id}b)" opacity=".62"/>
+      <polygon points="40,30 55,56 25,56" fill="${cm}" opacity=".3"/>
+      <polygon points="40,5 76,70 65,62 40,18" fill="${cm}" opacity=".4"/>
+      <polygon points="40,5 4,70 15,62 40,18" fill="${cl}" opacity=".35"/>
+      <polygon points="76,70 4,70 15,62 65,62" fill="${cd}" opacity=".52"/>
+      <line x1="40" y1="5" x2="40" y2="70" stroke="white" stroke-width=".4" opacity=".2"/>
+      <ellipse cx="37" cy="22" rx="7" ry="4" fill="white" opacity=".28" transform="rotate(-12,37,22)"/>
+      <polygon points="40,5 76,70 4,70" fill="url(#${id}c)" opacity=".65"/>
+      <polygon points="40,5 76,70 4,70" fill="none" stroke="${cl}" stroke-width=".8" opacity=".55"/>
+    </svg>`,
+    cit: `<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">${defs}
+      <rect x="9" y="9" width="62" height="62" rx="16" ry="16" fill="url(#${id}a)"/>
+      <rect x="18" y="18" width="44" height="44" rx="8" ry="8" fill="url(#${id}b)" opacity=".65"/>
+      <path d="M9,25 L18,18 L18,26 Z" fill="${cl}" opacity=".4"/>
+      <path d="M71,25 L62,18 L62,26 Z" fill="${cm}" opacity=".36"/>
+      <path d="M9,55 L18,62 L18,54 Z" fill="${color}" opacity=".4"/>
+      <path d="M71,55 L62,62 L62,54 Z" fill="${cd}" opacity=".42"/>
+      <rect x="22" y="22" width="36" height="36" rx="6" fill="none" stroke="white" stroke-width=".35" opacity=".15"/>
+      <ellipse cx="34" cy="24" rx="11" ry="5" fill="white" opacity=".3" transform="rotate(-8,34,24)"/>
+      <rect x="9" y="9" width="62" height="62" rx="16" ry="16" fill="url(#${id}c)" opacity=".65"/>
+      <rect x="9" y="9" width="62" height="62" rx="16" ry="16" fill="none" stroke="${cl}" stroke-width=".8" opacity=".55"/>
+    </svg>`,
+    ruby: `<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">${defs}
+      <polygon points="40,5 74,30 74,50 40,75 6,50 6,30" fill="url(#${id}a)"/>
+      <polygon points="40,5 74,30 74,50 40,38" fill="${cm}" opacity=".38"/>
+      <polygon points="40,5 6,30 6,50 40,38" fill="${cl}" opacity=".32"/>
+      <polygon points="40,75 74,50 40,38" fill="${cd}" opacity=".55"/>
+      <polygon points="40,75 6,50 40,38" fill="${darken(color,.15)}" opacity=".5"/>
+      <polygon points="40,5 74,30 65,36 40,22 15,36 6,30" fill="${cl}" opacity=".35"/>
+      <polygon points="40,75 74,50 65,44 40,58 15,44 6,50" fill="${cd}" opacity=".42"/>
+      <ellipse cx="35" cy="20" rx="10" ry="5" fill="white" opacity=".3" transform="rotate(-18,35,20)"/>
+      <line x1="40" y1="5" x2="40" y2="75" stroke="white" stroke-width=".38" opacity=".18"/>
+      <polygon points="40,5 74,30 74,50 40,75 6,50 6,30" fill="url(#${id}c)" opacity=".65"/>
+      <polygon points="40,5 74,30 74,50 40,75 6,50 6,30" fill="none" stroke="${cl}" stroke-width=".8" opacity=".55"/>
+    </svg>`,
+    sap: `<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">${defs}
+      <polygon points="40,4 60,16 74,36 74,52 60,68 40,76 20,68 6,52 6,36 20,16" fill="url(#${id}a)"/>
+      <polygon points="40,16 56,24 64,38 64,52 56,64 40,70 24,64 16,52 16,38 24,24" fill="url(#${id}b)" opacity=".65"/>
+      <polygon points="40,4 60,16 56,24 40,16 24,24 20,16" fill="${cl}" opacity=".4"/>
+      <polygon points="40,76 60,68 56,64 40,70 24,64 20,68" fill="${cd}" opacity=".52"/>
+      <polygon points="74,36 64,38 64,52 74,52" fill="${cm}" opacity=".38"/>
+      <polygon points="6,36 16,38 16,52 6,52" fill="${cl}" opacity=".34"/>
+      <ellipse cx="34" cy="20" rx="10" ry="4" fill="white" opacity=".3" transform="rotate(-10,34,20)"/>
+      <polygon points="40,4 60,16 74,36 74,52 60,68 40,76 20,68 6,52 6,36 20,16" fill="url(#${id}c)" opacity=".65"/>
+      <polygon points="40,4 60,16 74,36 74,52 60,68 40,76 20,68 6,52 6,36 20,16" fill="none" stroke="${cl}" stroke-width=".8" opacity=".55"/>
+    </svg>`
+  };
+  
+  return shapes[shape] || shapes.ruby;
+}
+
+/* ═════════════════════════════════════════════════════════════════════════════
+   BACKGROUND CANVAS ANIMATIONS
+═════════════════════════════════════════════════════════════════════════════ */
+function initBackgroundCanvas() {
+  const canvas = document.getElementById('bg-canvas');
+  const ctx = canvas.getContext('2d');
+  let W, H, T = 0;
+  const shards = [];
+  const N = 45;
+  
+  function resize() {
+    W = canvas.width = innerWidth;
+    H = canvas.height = innerHeight;
+  }
+  
+  addEventListener('resize', resize);
+  resize();
+  
+  const hueGroups = [[192,235],[260,315],[150,192],[24,54],[320,358],[280,340],[200,280]];
+  
+  for (let i = 0; i < N; i++) {
+    const h = hueGroups[i % 7];
+    shards.push({
+      x: Math.random() * 100,
+      y: Math.random() * 100,
+      sz: Math.random() * 80 + 18,
+      rot: Math.random() * Math.PI * 2,
+      rs: (Math.random() - .5) * .003,
+      h, al: Math.random() * .095 + .018,
+      vx: (Math.random() - .5) * .012,
+      vy: (Math.random() - .5) * .012,
+      ph: Math.random() * Math.PI * 2,
+      ps: Math.random() * .018 + .004
+    });
+  }
+
+  function drawShard(s) {
+    const px = (s.x / 100) * W, py = (s.y / 100) * H;
+    const p = Math.sin(s.ph + T * s.ps) * .28 + .72, sz = s.sz * p;
+    const hue = s.h[0] + ((T * .18 + s.ph * 16) % (s.h[1] - s.h[0]));
+    
+    ctx.save();
+    ctx.translate(px, py);
+    ctx.rotate(s.rot + T * s.rs);
+    
+    ctx.beginPath();
+    ctx.moveTo(0, -sz);
+    ctx.lineTo(sz * .45, -sz * .15);
+    ctx.lineTo(sz * .55, sz * .32);
+    ctx.lineTo(0, sz);
+    ctx.lineTo(-sz * .55, sz * .32);
+    ctx.lineTo(-sz * .45, -sz * .15);
+    ctx.closePath();
+    
+    const g = ctx.createLinearGradient(-sz, -sz, sz, sz);
+    g.addColorStop(0, `hsla(${hue},80%,92%,${s.al * p})`);
+    g.addColorStop(.25, `hsla(${hue+30},85%,82%,${s.al * .5})`);
+    g.addColorStop(.5, `hsla(${hue+60},75%,96%,${s.al * p})`);
+    g.addColorStop(.75, `hsla(${hue+90},80%,86%,${s.al * .35})`);
+    g.addColorStop(1, `hsla(${hue+120},85%,78%,${s.al * .2})`);
+    ctx.fillStyle = g;
+    ctx.fill();
+    
+    ctx.strokeStyle = `hsla(${hue+40},90%,98%,${s.al * 1.4 * p})`;
+    ctx.lineWidth = .4;
+    ctx.stroke();
+    
+    ctx.beginPath();
+    ctx.moveTo(0, -sz * .65);
+    ctx.lineTo(sz * .28, sz * .2);
+    ctx.lineTo(-sz * .28, sz * .2);
+    ctx.closePath();
+    ctx.strokeStyle = `rgba(255,255,255,${s.al * .7 * p})`;
+    ctx.lineWidth = .28;
+    ctx.stroke();
+    
+    ctx.beginPath();
+    ctx.moveTo(-sz * .3, -sz * .3);
+    ctx.lineTo(sz * .3, sz * .3);
+    ctx.strokeStyle = `hsla(${hue+180},70%,90%,${s.al * .4 * p})`;
+    ctx.lineWidth = .2;
+    ctx.stroke();
+    
+    ctx.restore();
+  }
+
+  let lastT = 0;
+  function frame(ts) {
+    if (ts - lastT > 28) {
+      lastT = ts; T++;
+      ctx.fillStyle = '#010008';
+      ctx.fillRect(0, 0, W, H);
+      
+      const g1 = ctx.createRadialGradient(W * (.5 + .1 * Math.sin(T * .0007)), H * (.35 + .1 * Math.cos(T * .0005)), 10, W * .5, H * .5, W * .8);
+      g1.addColorStop(0, `hsla(${270 + 18 * Math.sin(T * .001)},58%,16%,.9)`);
+      g1.addColorStop(.4, `hsla(${240 + 12 * Math.cos(T * .0008)},48%,9%,.55)`);
+      g1.addColorStop(1, 'transparent');
+      ctx.fillStyle = g1;
+      ctx.fillRect(0, 0, W, H);
+      
+      const g2 = ctx.createRadialGradient(W * (.75 + .1 * Math.cos(T * .0006)), H * (.68 + .1 * Math.sin(T * .0009)), 10, W * .68, H * .62, W * .65);
+      g2.addColorStop(0, `hsla(${210 + 12 * Math.sin(T * .001)},56%,12%,.8)`);
+      g2.addColorStop(1, 'transparent');
+      ctx.fillStyle = g2;
+      ctx.fillRect(0, 0, W, H);
+      
+      const g3 = ctx.createRadialGradient(W * (.25 + .08 * Math.sin(T * .0005)), H * (.65 + .08 * Math.cos(T * .0007)), 5, W * .25, H * .6, W * .5);
+      g3.addColorStop(0, `hsla(${300 + 20 * Math.cos(T * .0012)},50%,14%,.6)`);
+      g3.addColorStop(1, 'transparent');
+      ctx.fillStyle = g3;
+      ctx.fillRect(0, 0, W, H);
+      
+      const gc = ctx.createRadialGradient(W * .5, 0, 0, W * .5, H * .28, W * .45);
+      gc.addColorStop(0, `rgba(212,168,67,${.05 + .025 * Math.sin(T * .0025)})`);
+      gc.addColorStop(1, 'transparent');
+      ctx.fillStyle = gc;
+      ctx.fillRect(0, 0, W, H);
+      
+      const gf = ctx.createLinearGradient(0, H * .72, 0, H);
+      gf.addColorStop(0, 'transparent');
+      gf.addColorStop(.3, `rgba(30,20,60,${.35 + .08 * Math.sin(T * .002)})`);
+      gf.addColorStop(1, `rgba(20,15,40,${.5 + .1 * Math.sin(T * .0018)})`);
+      ctx.fillStyle = gf;
+      ctx.fillRect(0, H * .72, W, H * .28);
+      
+      shards.forEach(s => {
+        s.x += s.vx; s.y += s.vy;
+        if (s.x < -6) s.x = 106; if (s.x > 106) s.x = -6;
+        if (s.y < -6) s.y = 106; if (s.y > 106) s.y = -6;
+        drawShard(s);
+      });
+      
+      for (let i = 0; i < 3; i++) {
+        const gfi = ctx.createLinearGradient(W * Math.sin(T * .00028 + i * 2.1), 0, W * Math.cos(T * .00035 + i * 2.1), H);
+        gfi.addColorStop(0, 'transparent');
+        gfi.addColorStop(.35, `hsla(${170 + i * 60 + 30 * Math.sin(T * .0012 + i)},70%,76%,${.012 + i * .003})`);
+        gfi.addColorStop(.5, `hsla(${230 + i * 60 + 30 * Math.cos(T * .0012 + i)},78%,80%,${.016 + i * .004})`);
+        gfi.addColorStop(.65, `hsla(${290 + i * 60 + 30 * Math.sin(T * .0012 + i)},72%,74%,${.012 + i * .003})`);
+        gfi.addColorStop(1, 'transparent');
+        ctx.fillStyle = gfi;
+        ctx.fillRect(0, 0, W, H);
+      }
+      
+      ctx.strokeStyle = 'rgba(212,168,67,.018)';
+      ctx.lineWidth = .4;
+      for (let x = 0; x < W; x += 90) {
+        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
+      }
+      for (let y = 0; y < H; y += 90) {
+        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+      }
+      
+      ctx.strokeStyle = 'rgba(200,240,255,.008)';
+      ctx.lineWidth = .3;
+      for (let i = -H; i < W; i += 180) {
+        ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i + H, H); ctx.stroke();
+      }
+    }
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+}
+
+/* ═════════════════════════════════════════════════════════════════════════════
+   IRIDESCENCE CANVAS
+═════════════════════════════════════════════════════════════════════════════ */
+function initIridescenceCanvas() {
+  const canvas = document.getElementById('iridescence-canvas');
+  const ctx = canvas.getContext('2d');
+  let W, H, T = 0;
+  
+  function resize() {
+    W = canvas.width = innerWidth;
+    H = canvas.height = innerHeight;
+  }
+  
+  addEventListener('resize', resize);
+  resize();
+  
+  const iridColors = [
+    {h: 180, s: 70, l: 85, a: .03},
+    {h: 220, s: 75, l: 82, a: .025},
+    {h: 260, s: 65, l: 88, a: .02},
+    {h: 300, s: 60, l: 85, a: .025},
+    {h: 340, s: 70, l: 82, a: .02}
+  ];
+  
+  function frame() {
+    T++;
+    ctx.clearRect(0, 0, W, H);
+    
+    iridColors.forEach((col, i) => {
+      const offsetX = Math.sin(T * .0008 + i * 1.3) * W * .3;
+      const offsetY = Math.cos(T * .0006 + i * 1.1) * H * .25;
+      const x = W * (.3 + i * .15) + offsetX;
+      const y = H * (.2 + i * .18) + offsetY;
+      const r = Math.min(W, H) * (.25 + .1 * Math.sin(T * .001 + i));
+      
+      const g = ctx.createRadialGradient(x, y, 0, x, y, r);
+      const hue = col.h + Math.sin(T * .002 + i) * 30;
+      g.addColorStop(0, `hsla(${hue},${col.s}%,${col.l}%,${col.a})`);
+      g.addColorStop(.5, `hsla(${hue+20},${col.s-10}%,${col.l+5}%,${col.a * .5})`);
+      g.addColorStop(1, 'transparent');
+      
+      ctx.fillStyle = g;
+      ctx.fillRect(0, 0, W, H);
+    });
+    
+    requestAnimationFrame(frame);
+  }
+  frame();
+}
+
+/* ═════════════════════════════════════════════════════════════════════════════
+   PARTICLE TRAIL SYSTEM
+═════════════════════════════════════════════════════════════════════════════ */
+function initParticleSystem() {
+  const canvas = document.getElementById('particle-canvas');
+  const ctx = canvas.getContext('2d');
+  let W, H;
+  const particles = [];
+  const colors = ['#d4a843','#f5da7a','#dce8ff','#c8f0ff','#d4907c','#6fcfaa','#b39ddb','#f07ca8','#fff','#ffd060','#e8d5ff','#c8f0ff'];
+  
+  function resize() {
+    W = canvas.width = innerWidth;
+    H = canvas.height = innerHeight;
+  }
+  
+  addEventListener('resize', resize);
+  resize();
+  
+  addEventListener('mousemove', e => {
+    if (Math.random() < .38) {
+      const n = Math.ceil(Math.random() * 3);
+      for (let i = 0; i < n; i++) {
+        particles.push({
+          x: e.clientX + (Math.random() - .5) * 10,
+          y: e.clientY + (Math.random() - .5) * 10,
+          vx: (Math.random() - .5) * 3,
+          vy: (Math.random() - .5) * 3 - 1.2,
+          life: 1,
+          decay: Math.random() * .018 + .012,
+          sz: Math.random() * 6 + 1.5,
+          col: colors[Math.floor(Math.random() * colors.length)],
+          isGem: Math.random() < .14,
+          rot: Math.random() * Math.PI * 2,
+          rs: (Math.random() - .5) * .2,
+          glow: Math.random() * 9 + 4
+        });
+      }
+    }
+  });
+  
+  function frame() {
+    ctx.clearRect(0, 0, W, H);
+    
+    for (let i = particles.length - 1; i >= 0; i--) {
+      const p = particles[i];
+      p.x += p.vx; p.y += p.vy;
+      p.vy += .038; p.vx *= .97;
+      p.life -= p.decay; p.rot += p.rs;
+      
+      if (p.life <= 0) {
+        particles.splice(i, 1);
+        continue;
+      }
+      
+      ctx.save();
+      ctx.globalAlpha = p.life * .85;
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot);
+      ctx.shadowColor = p.col;
+      ctx.shadowBlur = p.glow * p.life;
+      
+      if (p.isGem) {
+        ctx.font = `${p.sz * 2.2}px serif`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(['💎','✦','◈','◇','✧','⬥','🔮','🌟'][Math.floor(Math.random() * 8)], 0, 0);
+      } else {
+        ctx.beginPath();
+        ctx.moveTo(0, -p.sz);
+        ctx.lineTo(p.sz * .48, -p.sz * .2);
+        ctx.lineTo(p.sz * .58, p.sz * .38);
+        ctx.lineTo(0, p.sz);
+        ctx.lineTo(-p.sz * .58, p.sz * .38);
+        ctx.lineTo(-p.sz * .48, -p.sz * .2);
+        ctx.closePath();
+        const g = ctx.createRadialGradient(0, 0, 0, 0, 0, p.sz);
+        g.addColorStop(0, '#fff');
+        g.addColorStop(.32, p.col);
+        g.addColorStop(1, 'transparent');
+        ctx.fillStyle = g;
+        ctx.fill();
+      }
+      ctx.restore();
+    }
+    requestAnimationFrame(frame);
+  }
+  frame();
+  
+  // Click burst effect
+  addEventListener('click', e => {
+    const burstCount = 14;
+    for (let i = 0; i < burstCount; i++) {
+      const a = (i / burstCount) * Math.PI * 2;
+      const d = document.createElement('div');
+      const col = colors[Math.floor(Math.random() * colors.length)];
+      d.style.cssText = `position:fixed;left:${e.clientX}px;top:${e.clientY}px;width:5px;height:5px;border-radius:50%;background:${col};pointer-events:none;z-index:99997;transform:translate(-50%,-50%);transition:all .65s ease-out;box-shadow:0 0 10px ${col};`;
+      document.body.appendChild(d);
+      requestAnimationFrame(() => {
+        d.style.left = (e.clientX + Math.cos(a) * 55) + 'px';
+        d.style.top = (e.clientY + Math.sin(a) * 55) + 'px';
+        d.style.opacity = '0';
+        d.style.transform = 'translate(-50%,-50%) scale(2.5)';
+      });
+      setTimeout(() => d.remove(), 700);
+    }
+  });
+}
+
+/* ═════════════════════════════════════════════════════════════════════════════
+   NAVIGATION SYSTEM
+═════════════════════════════════════════════════════════════════════════════ */
+function initNavigation() {
+  // Build nav items
+  const navItems = document.getElementById('nav-items');
+  
+  // Home item
+  const homeItem = document.createElement('button');
+  homeItem.className = 'nav-item active';
+  homeItem.dataset.page = 'home';
+  homeItem.innerHTML = `<div class="ni-gem">${generateCrystalSVG('#d4a843', 'rose', 30)}</div><div class="ni-text"><span class="ni-name">Home</span><span class="ni-desc">Return to homepage</span></div><span class="ni-arrow">›</span>`;
+  homeItem.addEventListener('click', () => { goToPage('home'); closeNav(); });
+  navItems.appendChild(homeItem);
+  
+  // Gem items
+  GEMS.forEach(gem => {
+    const item = document.createElement('button');
+    item.className = 'nav-item';
+    item.dataset.page = gem.id;
+    item.innerHTML = `<div class="ni-gem">${generateCrystalSVG(gem.color, gem.shape, 30)}</div><div class="ni-text"><span class="ni-name" style="color:${gem.color}">${gem.label}</span><span class="ni-desc">${gem.desc}</span></div><span class="ni-arrow" style="color:${gem.color}">›</span>`;
+    item.addEventListener('click', () => { goToPage(gem.id); closeNav(); });
+    navItems.appendChild(item);
+  });
+  
+  // Nav trigger
+  document.getElementById('nav-trigger').addEventListener('click', toggleNav);
+  document.getElementById('nav-close').addEventListener('click', closeNav);
+  document.getElementById('nav-overlay').addEventListener('click', closeNav);
+  document.querySelector('.nav-logo').addEventListener('click', () => goToPage('home'));
+  
+  // Panel back buttons
+  document.querySelectorAll('.panel-back').forEach(btn => {
+    btn.addEventListener('click', () => goToPage(btn.dataset.page));
+  });
+  
+  // Hash change handler
+  window.addEventListener('popstate', () => {
+    const hash = location.hash.replace('#', '');
+    activatePage(hash || 'home');
+  });
+}
+
+function toggleNav() {
+  const dd = document.getElementById('nav-dropdown');
+  const ov = document.getElementById('nav-overlay');
+  const trig = document.getElementById('nav-trigger');
+  const open = dd.classList.toggle('open');
+  ov.classList.toggle('open', open);
+  trig.classList.toggle('nav-menu-open', open);
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.toggle('active', el.dataset.page === currentPage));
+}
+
+function closeNav() {
+  document.getElementById('nav-dropdown').classList.remove('open');
+  document.getElementById('nav-overlay').classList.remove('open');
+  document.getElementById('nav-trigger').classList.remove('nav-menu-open');
+}
+
+function goToPage(name) {
+  if (!document.getElementById('pg-' + name)) return;
+  const hash = name === 'home' ? '' : name;
+  history.pushState({page: name}, '', hash ? '#' + hash : '#');
+  activatePage(name);
+}
+
+function activatePage(name) {
+  if (name === currentPage) return;
+  
+  const prev = document.getElementById('pg-' + currentPage);
+  const next = document.getElementById('pg-' + name);
+  if (!next) return;
+  
+  if (prev) {
+    prev.style.opacity = '0';
+    setTimeout(() => prev.classList.remove('active'), 220);
+  }
+  
+  setTimeout(() => {
+    next.classList.add('active');
+    requestAnimationFrame(() => { next.style.opacity = '1'; });
+    window.scrollTo({top: 0, behavior: 'smooth'});
+  }, prev ? 220 : 0);
+  
+  currentPage = name;
+  document.getElementById('nav-active-label').textContent = PAGE_LABELS[name] || name;
+  document.getElementById('nav-gem-dot').textContent = PAGE_GEMS[name] || '💎';
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.toggle('active', el.dataset.page === name));
+  document.getElementById('quill-fab').classList.toggle('show', name === 'freedom');
+  
+  // Lazy load page content
+  if (name === 'freedom' && !fwInitialized) initFreedomWall();
+  if (name === 'program') buildProgramPage();
+  if (name === 'committee') buildCommitteePage();
+  if (name === 'details') buildDetailsPage();
+  if (name === 'moodboard') buildMoodboard();
+  
+  closeNav();
+}
+
+/* ═════════════════════════════════════════════════════════════════════════════
+   HOME PAGE - GEM GRID
+═════════════════════════════════════════════════════════════════════════════ */
+function buildGemGrid() {
+  const grid = document.getElementById('gem-grid');
+  document.getElementById('nav-logo-gem').innerHTML = generateCrystalSVG('#d4a843', 'rose', 32);
+  
+  GEMS.forEach(gem => {
+    const card = document.createElement('div');
+    card.className = 'gem-card';
+    card.style.setProperty('--gc', gem.color);
+    card.style.setProperty('--gc-rgb', gem.rgb);
+    card.style.setProperty('--fdur', gem.dur);
+    card.style.setProperty('--fdelay', gem.delay);
+    card.style.borderColor = `rgba(${gem.rgb},.14)`;
+    
+    const iconWrap = document.createElement('div');
+    iconWrap.className = 'gem-icon-wrap';
+    iconWrap.innerHTML = generateCrystalSVG(gem.color, gem.shape, 56);
+    
+    const ring1 = document.createElement('div');
+    ring1.className = 'gem-ring';
+    ring1.style.borderColor = gem.color;
+    
+    const ring2 = document.createElement('div');
+    ring2.className = 'gem-ring-2';
+    ring2.style.borderColor = gem.color;
+    
+    iconWrap.appendChild(ring1);
+    iconWrap.appendChild(ring2);
+    
+    const text = document.createElement('div');
+    text.className = 'gem-text';
+    text.innerHTML = `<div class="gem-name">${gem.label}</div><div class="gem-desc">${gem.desc}</div>`;
+    
+    const arrow = document.createElement('div');
+    arrow.className = 'gem-arrow';
+    arrow.style.color = gem.color;
+    arrow.textContent = '›';
+    
+    card.appendChild(iconWrap);
+    card.appendChild(text);
+    card.appendChild(arrow);
+    
+    card.addEventListener('click', e => {
+      triggerGlow(e.clientX, e.clientY, gem.color);
+      setTimeout(() => goToPage(gem.id), 175);
+    });
+    
+    grid.appendChild(card);
+  });
+  
+  // Panel gems
+  GEMS.forEach(gem => {
+    const el = document.getElementById('pgi-' + gem.id);
+    if (el) el.innerHTML = generateCrystalSVG(gem.color, gem.shape, 22);
+  });
+}
+
+function triggerGlow(x, y, color) {
+  const el = document.getElementById('screen-glow');
+  const r = parseInt(color.slice(1, 3), 16);
+  const g = parseInt(color.slice(3, 5), 16);
+  const b = parseInt(color.slice(5, 7), 16);
+  el.style.background = `radial-gradient(ellipse at ${(x / innerWidth * 100).toFixed(1)}% ${(y / innerHeight * 100).toFixed(1)}%,rgba(255,255,255,.16) 0%,rgba(${r},${g},${b},.22) 26%,transparent 70%)`;
+  el.classList.add('flash');
+  setTimeout(() => {
+    el.style.transition = 'opacity .6s ease-out';
+    el.style.opacity = '0';
+    setTimeout(() => {
+      el.classList.remove('flash');
+      el.style.transition = '';
+      el.style.opacity = '';
+    }, 640);
+  }, 130);
+}
+
+/* ═════════════════════════════════════════════════════════════════════════════
+   COUNTDOWN TIMER
+═════════════════════════════════════════════════════════════════════════════ */
+function initCountdown() {
+  const target = new Date('2026-04-10T16:00:00+08:00').getTime();
+  
+  function update() {
+    const diff = target - Date.now();
+    if (diff <= 0) {
+      ['d', 'h', 'm', 's'].forEach(k => {
+        const el = document.getElementById('cd-' + k);
+        if (el) el.textContent = '00';
+      });
+      return;
+    }
+    
+    const d = Math.floor(diff / 864e5);
+    const h = Math.floor((diff % 864e5) / 36e5);
+    const m = Math.floor((diff % 36e5) / 6e4);
+    const s = Math.floor((diff % 6e4) / 1000);
+    
+    const set = (id, v) => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = String(v).padStart(2, '0');
+    };
+    
+    set('cd-d', d);
+    set('cd-h', h);
+    set('cd-m', m);
+    set('cd-s', s);
+  }
+  
+  update();
+  setInterval(update, 1000);
+}
+
+/* ═════════════════════════════════════════════════════════════════════════════
+   PAGE BUILDERS
+═════════════════════════════════════════════════════════════════════════════ */
+function buildProgramPage() {
+  const container = document.getElementById('program-content');
+  if (container.children.length > 0) return;
+  
+  const program = [
+    {t: '3:30 – 4:00 PM', e: 'Call Time', s: 'Guests and participants arrive'},
+    {t: '4:00 – 4:50 PM', e: 'I. Registration', s: ''},
+    {t: '5:00 – 5:30 PM', e: 'II. Grand Entrance', s: ''},
+    {t: '5:35 – 5:45 PM', e: 'III. Opening Program', s: 'Opening Prayer (2 mins) · National Anthem (2 mins) · Opening Remarks (5 mins)'},
+    {t: '5:45 – 5:50 PM', e: 'Prayer for Food', s: ''},
+    {t: '5:50 – 6:55 PM', e: 'IV. Dinner', s: ''},
+    {t: '6:15 – 6:20 PM', e: 'Class Prophecy', s: ''},
+    {t: '6:20 – 6:25 PM', e: 'Book of Knowledge', s: ''},
+    {t: '6:25 – 6:35 PM', e: 'Presentation of Batch Videos', s: 'Grade 10 (5 min) · Grade 11 (5 min)'},
+    {t: '6:35 – 6:40 PM', e: 'Class Will', s: ''},
+    {t: '6:40 – 6:45 PM', e: 'Key of Responsibility', s: ''},
+    {t: '6:45 – 6:55 PM', e: 'Candle Lighting', s: ''},
+    {t: '6:55 – 7:00 PM', e: 'V. Inspirational Message', s: ''},
+    {t: '7:00 – 7:20 PM', e: 'VI. Dance Numbers / Cotillion', s: 'Grade 10 (10 min) · Grade 11 (10 min)'},
+    {t: '7:20 – 7:45 PM', e: 'VII. Awarding & Giving of Tokens', s: 'Minor Awards · Prom King & Prom Queen'},
+    {t: '7:45 – 7:50 PM', e: 'VIII. Closing Remarks', s: ''},
+    {t: '7:50 – 8:00 PM', e: 'IX. Photo Opportunity', s: ''},
+    {t: '8:00 – 8:05 PM', e: 'X. UP Naming Mahal', s: ''},
+    {t: '8:05 PM onwards', e: 'Disco', s: '— End of Program —'}
+  ];
+  
+  const items = program.map(p => `
+    <div class="glass-card program-item" style="border-color:rgba(111,207,170,.12)">
+      <span class="pi-time" style="color:var(--emerald)">${p.t}</span>
+      <div class="pi-content">
+        <strong>${p.e}</strong>
+        ${p.s ? `<span>${p.s}</span>` : ''}
+      </div>
+    </div>
+  `).join('');
+  
+  container.innerHTML = `
+    <p class="page-eyebrow" style="color:var(--emerald)">✦ &nbsp;Evening's Journey&nbsp; ✦</p>
+    <h2 class="page-title">Program Flow</h2>
+    <div class="page-divider">
+      <span class="pd-line" style="background:linear-gradient(90deg,transparent,var(--emerald))"></span>
+      <span class="pd-gem" style="color:var(--emerald)">◈</span>
+      <span class="pd-line" style="background:linear-gradient(90deg,var(--emerald),transparent)"></span>
+    </div>
+    <div class="glass-card program-host" style="border-color:rgba(111,207,170,.15)">
+      <p class="ph-label" style="color:var(--emerald)">Host &amp; Hostess</p>
+      <p class="ph-names">Heanna Heanna Kiera Perez &amp; Adriel Benedict Zamora</p>
+    </div>
+    <div class="program-list">${items}</div>
+  `;
+}
+
+function buildCommitteePage() {
+  const container = document.getElementById('committee-content');
+  if (container.children.length > 0) return;
+  
+  const committees = [
+    {dept: 'Executive Committee', heads: ['Gianne Dominique Zamora','Jann Valencia'], members: [], exec: true},
+    {dept: 'Food & Venue', heads: ['Arhyen Fe Ayuyon'], members: ['Karlene Angela Moscoso','Juan Paolo Miguel Belencion','Jeia Deocampo','Mitchellaine Homeres','Angel Robledo']},
+    {dept: 'Technicals & Publications', heads: ['Chara Louise Joven'], members: ['Niko Torrecampo','Jessa Belle Silla','Edmer Bob Cajilig','Alexa Kayllen Tan','Leah Lee Sindol']},
+    {dept: 'Decorations & Table Arrangement', heads: ['Anne Mariette Denusta','Kayelle Zoe Santiana'], members: ['Thezza Jean Villa','Raimshel Gayle Pacificar','Bien Mauriz Viejon','Oscar Alex Moragas','Kaye Moragas']},
+    {dept: 'Souvenirs & Awards', heads: ['Guillanne Marie Agreda','Ginger Velasco'], members: ['Ayesha Jewel Bero-An','Alexis Gabrielle Magan','Johrielle May Castillano','Wenz Jan Lacao','Francheska Marie Loreña']},
+    {dept: 'Budget', heads: ['Anna Vittoria Mendez'], members: ['Lian Mae Abria','Hariene Therese Pacheco','Shana Fraelan Ignacio','Leauwen Faye Azucenas','Dedrey Labos']},
+    {dept: 'Program & Letters', heads: ['Benjamin Israel Fuentespina','Dawreen Mharie Marte'], members: ['Mary Ashly C. Lim','Trexie Ann D. Carreon','Hanah Daniah Casero','Chriss Angel Amar','Ryvee Marie Cabaling']},
+    {dept: 'Cotillion Committee', heads: ['To be announced'], members: []}
+  ];
+  
+  const cards = committees.map(c => {
+    if (c.exec) {
+      return `<div class="glass-card exec-card" style="border-color:rgba(179,157,219,.2)">
+        <p class="exec-label" style="color:var(--amethyst)">✦ Executive Committee Head ✦</p>
+        <p class="exec-names">${c.heads.join('<br/>')}</p>
+      </div>`;
+    }
+    const mem = c.members.length ? `<ul class="cc-members">${c.members.map(m => `<li><span style="color:var(--amethyst)">◇</span>&nbsp;${m}</li>`).join('')}</ul>` : '<p style="font-style:italic;color:rgba(240,230,210,.26);font-size:.84rem;">Members to be announced</p>';
+    return `<div class="glass-card committee-card" style="border-color:rgba(179,157,219,.12)">
+      <p class="cc-dept" style="color:var(--amethyst)">✦ ${c.dept}</p>
+      <p class="cc-heads">${c.heads.join(' & ')}</p>
+      <p class="cc-label" style="color:var(--amethyst)">Committee Head${c.heads.length > 1 ? 's' : ''}</p>
+      ${mem}
+    </div>`;
+  }).join('');
+  
+  container.innerHTML = `
+    <p class="page-eyebrow" style="color:var(--amethyst)">✦ &nbsp;The Architects of Magic&nbsp; ✦</p>
+    <h2 class="page-title">Prom Committee</h2>
+    <div class="page-divider">
+      <span class="pd-line" style="background:linear-gradient(90deg,transparent,var(--amethyst))"></span>
+      <span class="pd-gem" style="color:var(--amethyst)">◈</span>
+      <span class="pd-line" style="background:linear-gradient(90deg,var(--amethyst),transparent)"></span>
+    </div>
+    <div class="committee-grid">${cards}</div>
+  `;
+}
+
+function buildDetailsPage() {
+  const container = document.getElementById('details-content');
+  if (container.children.length > 0) return;
+  
+  const details = [
+    {i: '📅', l: 'Date', v: 'April 10, 2026', s: 'Thursday Evening'},
+    {i: '⏰', l: 'Call Time', v: '3:30 PM', s: 'Program starts 4:00 PM'},
+    {i: '📍', l: 'Venue', v: 'Punta Villa Resort Inc.', s: 'Arevalo, Iloilo City'},
+    {i: '🎓', l: 'Occasion', v: 'Junior–Senior Prom', s: "UP High School Iloilo · Prom '26"},
+    {i: '✨', l: 'Theme', v: 'The Crystal Ball', s: 'A Night of Timeless Iridescence'},
+    {i: '🎭', l: 'Attire', v: 'Formal Attire', s: 'Iridescent &amp; crystal tones welcome'}
+  ];
+  
+  const cards = details.map(d => `
+    <div class="glass-card detail-card" style="border-color:rgba(240,124,168,.12)">
+      <span class="detail-icon">${d.i}</span>
+      <p class="detail-label" style="color:var(--pink)">${d.l}</p>
+      <p class="detail-value">${d.v}</p>
+      <p class="detail-sub">${d.s}</p>
+    </div>
+  `).join('');
+  
+  container.innerHTML = `
+    <p class="page-eyebrow" style="color:var(--pink)">✦ &nbsp;The Evening&nbsp; ✦</p>
+    <h2 class="page-title">Event Details</h2>
+    <div class="page-divider">
+      <span class="pd-line" style="background:linear-gradient(90deg,transparent,var(--pink))"></span>
+      <span class="pd-gem" style="color:var(--pink)">◈</span>
+      <span class="pd-line" style="background:linear-gradient(90deg,var(--pink),transparent)"></span>
+    </div>
+    <div class="details-grid">${cards}</div>
+  `;
+}
+
+function buildMoodboard() {
+  const grid = document.getElementById('mood-grid');
+  if (grid.children.length > 0) return;
+  
+
+
+
+
+
+   
+  
+  items.forEach(item => {
+    const div = document.createElement('div');
+    div.className = 'mood-item';
+    
+    const canvas = document.createElement('canvas');
+    canvas.className = 'mood-canvas';
+    canvas.width = item.w;
+    canvas.height = item.h;
+    
+    const ctx = canvas.getContext('2d');
+    const g = ctx.createLinearGradient(0, 0, item.w, item.h);
+    item.c.forEach((col, i) => g.addColorStop(i / (item.c.length - 1), col));
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, item.w, item.h);
+    
+    ctx.strokeStyle = 'rgba(255,255,255,.09)';
+    ctx.lineWidth = .6;
+    for (let j = 0; j < 8; j++) {
+      ctx.beginPath();
+      ctx.moveTo(Math.random() * item.w, 0);
+      ctx.lineTo(Math.random() * item.w, item.h);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(0, Math.random() * item.h);
+      ctx.lineTo(item.w, Math.random() * item.h);
+      ctx.stroke();
+    }
+    
+    ctx.globalAlpha = .28;
+    ctx.font = '19px serif';
+    ['💎','✦','◈'].forEach(() => {
+      ctx.fillText(['💎','✦','◈'][Math.floor(Math.random() * 3)], Math.random() * (item.w - 30) + 15, Math.random() * (item.h - 30) + 15);
+    });
+    ctx.globalAlpha = 1;
+    
+    const gf = ctx.createLinearGradient(0, 0, item.w, 0);
+    gf.addColorStop(0, 'transparent');
+    gf.addColorStop(.5, 'rgba(255,255,255,.07)');
+    gf.addColorStop(1, 'transparent');
+    ctx.fillStyle = gf;
+    ctx.fillRect(0, 0, item.w, item.h);
+    
+    const overlay = document.createElement('div');
+    overlay.className = 'mood-overlay';
+    overlay.innerHTML = `<span class="mood-label" style="color:var(--rose)">${item.l}</span>`;
+    
+    div.appendChild(canvas);
+    div.appendChild(overlay);
+    grid.appendChild(div);
+  });
+}
+
+/* ═════════════════════════════════════════════════════════════════════════════
+   FREEDOM WALL
+═════════════════════════════════════════════════════════════════════════════ */
+function initFreedomWall() {
+  if (fwInitialized) return;
+  fwInitialized = true;
+  
+  msgRef.orderByChild('timestamp').on('value', snap => {
+    const data = snap.val();
+    wallPosts = data ? Object.entries(data).map(([k, v]) => ({...v, _key: k})) : [];
+    wallPosts.sort((a, b) => b.timestamp - a.timestamp);
+    renderWall();
+  });
+  
+  // Event listeners
+  document.getElementById('quill-fab').addEventListener('click', openCompose);
+  document.getElementById('compose-cancel').addEventListener('click', closeCompose);
+  document.getElementById('compose-submit').addEventListener('click', submitPost);
+  document.getElementById('fw-img-input').addEventListener('change', handleImageSelect);
+  document.getElementById('fw-anon').addEventListener('change', toggleAnonymous);
+  document.getElementById('admin-toggle').addEventListener('click', toggleAdminMode);
+  document.getElementById('post-modal-close').addEventListener('click', closePostModal);
+  document.getElementById('passcode-cancel').addEventListener('click', closePasscodeModal);
+  document.getElementById('passcode-confirm').addEventListener('click', confirmDelete);
+  document.getElementById('passcode-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') confirmDelete();
+  });
+  
+  // Close modals on backdrop click
+  document.getElementById('compose-modal').addEventListener('click', e => {
+    if (e.target === e.currentTarget) closeCompose();
+  });
+  document.getElementById('post-modal').addEventListener('click', e => {
+    if (e.target === e.currentTarget) closePostModal();
+  });
+  document.getElementById('passcode-modal').addEventListener('click', e => {
+    if (e.target === e.currentTarget) closePasscodeModal();
+  });
+}
+
+function renderWall() {
+  const grid = document.getElementById('wall-grid');
+  
+  if (!wallPosts.length) {
+    grid.innerHTML = `<p style="text-align:center;color:rgba(245,237,219,.3);padding:3rem;font-style:italic;font-family:'Cormorant Garamond',serif;">No messages yet — tap the 🪶 quill to write! ✨</p>`;
+    return;
+  }
+  
+  grid.className = 'wall-grid' + (adminMode ? ' admin-mode' : '');
+  
+  grid.innerHTML = wallPosts.map((p, i) => `
+    <div class="glass-card wall-post" style="border-color:rgba(239,112,112,.1)" data-index="${i}">
+      ${p.imgData ? `<img src="${p.imgData}" alt="post photo" loading="lazy"/>` : ''}
+      <div class="post-header">
+        <p class="post-title" style="color:var(--ruby)">${escapeHtml(p.title)}</p>
+        <button class="post-delete" data-key="${p._key}">✕</button>
+      </div>
+      <span class="post-gem">${p.gem || '✦'}</span>
+      <p class="post-content">${escapeHtml(p.msg.length > 130 ? p.msg.slice(0, 127) + '…' : p.msg)}</p>
+      <p class="post-author">✦ &nbsp;${escapeHtml(p.name)}</p>
+    </div>
+  `).join('');
+  
+  // Add click handlers
+  grid.querySelectorAll('.wall-post').forEach(post => {
+    post.addEventListener('click', e => {
+      if (e.target.classList.contains('post-delete')) return;
+      openPostModal(parseInt(post.dataset.index));
+    });
+  });
+  
+  grid.querySelectorAll('.post-delete').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      requestDelete(btn.dataset.key);
+    });
+  });
+}
+
+function openCompose() {
+  document.getElementById('compose-modal').classList.add('open');
+}
+
+function closeCompose() {
+  document.getElementById('compose-modal').classList.remove('open');
+  selectedImgDataUrl = null;
+  document.getElementById('fw-img-preview').style.display = 'none';
+  document.getElementById('fw-img-txt').textContent = 'Tap to attach a photo';
+  document.getElementById('fw-img-input').value = '';
+  document.getElementById('compose-status').textContent = '';
+  document.getElementById('fw-title').value = '';
+  document.getElementById('fw-message').value = '';
+  document.getElementById('fw-name').value = '';
+  document.getElementById('fw-anon').checked = false;
+  toggleAnonymous();
+}
+
+function handleImageSelect(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  
+  if (file.size > 1.5 * 1024 * 1024) {
+    document.getElementById('compose-status').textContent = 'Image too large. Please use a photo under 1.5MB.';
+    return;
+  }
+  
+  const reader = new FileReader();
+  reader.onload = ev => {
+    selectedImgDataUrl = ev.target.result;
+    const preview = document.getElementById('fw-img-preview');
+    preview.src = selectedImgDataUrl;
+    preview.style.display = 'block';
+    document.getElementById('fw-img-txt').textContent = file.name.length > 24 ? file.name.slice(0, 24) + '…' : file.name;
+    document.getElementById('compose-status').textContent = '';
+    
+    if (file.size > 400 * 1024) {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const maxW = 800;
+        const scale = Math.min(1, maxW / img.width);
+        canvas.width = img.width * scale;
+        canvas.height = img.height * scale;
+        canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+        selectedImgDataUrl = canvas.toDataURL('image/jpeg', .7);
+        preview.src = selectedImgDataUrl;
+      };
+      img.src = selectedImgDataUrl;
+    }
+  };
+  reader.readAsDataURL(file);
+}
+
+function toggleAnonymous() {
+  const checkbox = document.getElementById('fw-anon');
+  const nameInput = document.getElementById('fw-name');
+  nameInput.disabled = checkbox.checked;
+  nameInput.style.opacity = checkbox.checked ? '.3' : '1';
+  if (checkbox.checked) nameInput.value = '';
+}
+
+async function submitPost() {
+  const title = document.getElementById('fw-title').value.trim();
+  const msg = document.getElementById('fw-message').value.trim();
+  const nameVal = document.getElementById('fw-name').value.trim();
+  const anon = document.getElementById('fw-anon').checked;
+  
+  if (!title || !msg) {
+    document.getElementById('compose-status').textContent = 'Please fill in a title and message ✦';
+    return;
+  }
+  
+  const name = anon ? 'Anonymous' : (nameVal || 'Anonymous');
+  const btn = document.getElementById('compose-submit');
+  btn.textContent = 'Posting…';
+  btn.disabled = true;
+  
+  const post = {
+    title, msg, name,
+    gem: GEM_ICONS[Math.floor(Math.random() * GEM_ICONS.length)],
+    timestamp: Date.now()
+  };
+  
+  if (selectedImgDataUrl) post.imgData = selectedImgDataUrl;
+  
+  try {
+    await msgRef.push(post);
+    closeCompose();
+  } catch (err) {
+    document.getElementById('compose-status').textContent = 'Failed to post. Check connection.';
+    btn.textContent = 'Post to Wall ✦';
+    btn.disabled = false;
+  }
+}
+
+function openPostModal(index) {
+  const p = wallPosts[index];
+  const img = document.getElementById('modal-img');
+  
+  if (p.imgData) {
+    img.src = p.imgData;
+    img.style.display = 'block';
+  } else {
+    img.style.display = 'none';
+  }
+  
+  document.getElementById('modal-title').textContent = p.title;
+  document.getElementById('modal-body').textContent = p.msg;
+  document.getElementById('modal-author').textContent = '✦  ' + p.name;
+  document.getElementById('post-modal').classList.add('open');
+}
+
+function closePostModal() {
+  document.getElementById('post-modal').classList.remove('open');
+}
+
+function toggleAdminMode() {
+  adminMode = !adminMode;
+  const btn = document.getElementById('admin-toggle');
+  btn.classList.toggle('active', adminMode);
+  btn.textContent = adminMode ? 'Exit Admin' : 'Manage Posts';
+  renderWall();
+}
+
+function requestDelete(key) {
+  pendingDeleteKey = key;
+  document.getElementById('passcode-input').value = '';
+  document.getElementById('passcode-error').textContent = '';
+  document.getElementById('passcode-modal').classList.add('open');
+  setTimeout(() => document.getElementById('passcode-input').focus(), 200);
+}
+
+function confirmDelete() {
+  if (document.getElementById('passcode-input').value === ADMIN_PASSCODE) {
+    if (pendingDeleteKey) {
+      msgRef.child(pendingDeleteKey).remove().catch(() => alert('Delete failed.'));
+    }
+    pendingDeleteKey = null;
+    closePasscodeModal();
+  } else {
+    document.getElementById('passcode-error').textContent = 'Incorrect passcode.';
+    document.getElementById('passcode-input').value = '';
+    document.getElementById('passcode-input').focus();
+  }
+}
+
+function closePasscodeModal() {
+  pendingDeleteKey = null;
+  document.getElementById('passcode-modal').classList.remove('open');
+}
+
+/* ═════════════════════════════════════════════════════════════════════════════
+   MUSIC CONTROL
+═════════════════════════════════════════════════════════════════════════════ */
+function initMusicControl() {
+  const btn = document.getElementById('music-btn');
+  const music = document.getElementById('bg-music');
+  
+  btn.addEventListener('click', () => {
+    if (musicPlaying) {
+      music.pause();
+      musicPlaying = false;
+      btn.textContent = '🔇';
+      btn.classList.add('muted');
+    } else {
+      music.play().then(() => {
+        musicPlaying = true;
+        btn.textContent = '🎵';
+        btn.classList.remove('muted');
+      }).catch(() => {});
+    }
+  });
+}
+
+/* ═════════════════════════════════════════════════════════════════════════════
+   ENTER SITE
+═════════════════════════════════════════════════════════════════════════════ */
+function enterSite() {
+  const invitation = document.getElementById('invitation');
+  const site = document.getElementById('site');
+  const music = document.getElementById('bg-music');
+  
+  invitation.style.transition = 'opacity 1.1s ease,transform 1.1s ease';
+  invitation.style.opacity = '0';
+  invitation.style.transform = 'scale(1.05)';
+  
+  setTimeout(() => {
+    invitation.style.display = 'none';
+    site.style.display = 'block';
+    buildGemGrid();
+    initCountdown();
+    
+    const hash = location.hash.replace('#', '');
+    if (hash && hash !== 'home') activatePage(hash);
+    
+    if (music) music.play().then(() => { musicPlaying = true; }).catch(() => {});
+  }, 1100);
+}
+
+/* ═════════════════════════════════════════════════════════════════════════════
+   INITIALIZATION
+═════════════════════════════════════════════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded', () => {
+  // Initialize canvas animations
+  initBackgroundCanvas();
+  initIridescenceCanvas();
+  initParticleSystem();
+  
+  // Initialize navigation
+  initNavigation();
+  
+  // Initialize music control
+  initMusicControl();
+  
+  // Enter button
+  document.getElementById('enter-btn').addEventListener('click', enterSite);
+});
+</script>
+</body>
+</html>
