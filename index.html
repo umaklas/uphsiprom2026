@@ -53,7 +53,7 @@ html{
 }
 
 body{
-  background:transparent;
+  background:var(--void);
   color:var(--text);
   font-family:'Cormorant Garamond',serif;
   overflow-x:hidden;
@@ -67,17 +67,7 @@ body{
   pointer-events:none;
 }
 
-#bg-video{
-  position:fixed;
-  inset:0;
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  z-index:-1;
-  pointer-events:none;
-}
-
-#bg-canvas{z-index:0;background:transparent;}
+#bg-canvas{z-index:0;}
 #iridescence-canvas{z-index:1;mix-blend-mode:screen;opacity:.6;}
 #particle-canvas{z-index:9990;}
 
@@ -97,15 +87,77 @@ body{
    CRYSTAL PALACE BACKGROUND ELEMENTS
 ═════════════════════════════════════════════════════════════════════════════ */
 
-/* ─── SVG Border / Pillar Overlay ─── */
-#border-overlay{
+/* ─── Palace Pillars ─── */
+.palace-pillar{
   position:fixed;
-  inset:0;
-  width:100%;
+  top:0;
   height:100%;
-  object-fit:fill;
+  width:80px;
   pointer-events:none;
   z-index:2;
+  background:linear-gradient(180deg,
+    rgba(200,220,255,.03) 0%,
+    rgba(180,200,255,.06) 20%,
+    rgba(160,180,255,.04) 50%,
+    rgba(140,160,255,.02) 80%,
+    transparent 100%);
+}
+
+.palace-pillar::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:linear-gradient(90deg,
+    transparent 0%,
+    rgba(212,168,67,.08) 20%,
+    rgba(212,168,67,.15) 50%,
+    rgba(212,168,67,.08) 80%,
+    transparent 100%);
+}
+
+.palace-pillar::after{
+  content:'';
+  position:absolute;
+  top:0;
+  left:50%;
+  transform:translateX(-50%);
+  width:2px;
+  height:100%;
+  background:linear-gradient(180deg,
+    rgba(212,168,67,.3) 0%,
+    rgba(212,168,67,.1) 30%,
+    rgba(212,168,67,.05) 60%,
+    transparent 100%);
+}
+
+.pillar-left{left:0;}
+.pillar-right{right:0;transform:scaleX(-1);}
+
+/* ─── Crystal Archway ─── */
+.crystal-arch{
+  position:fixed;
+  top:0;
+  left:50%;
+  transform:translateX(-50%);
+  width:90%;
+  height:25vh;
+  pointer-events:none;
+  z-index:2;
+  background:linear-gradient(180deg,
+    rgba(200,220,255,.04) 0%,
+    rgba(180,200,255,.02) 50%,
+    transparent 100%);
+  clip-path:polygon(0 0, 100% 0, 85% 100%, 15% 100%);
+}
+
+.crystal-arch::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:linear-gradient(180deg,
+    rgba(212,168,67,.06) 0%,
+    transparent 60%);
+  clip-path:polygon(0 0, 100% 0, 85% 100%, 15% 100%);
 }
 
 /* ─── Floating Crystal Orbs ─── */
@@ -303,7 +355,7 @@ body{
   text-align:center;
   padding:2rem;
   overflow:hidden;
-  background:rgba(1,0,8,.72);
+  background:var(--void);
 }
 
 .invitation-ring{
@@ -1988,6 +2040,7 @@ body{
   .committee-grid{grid-template-columns:1fr;}
   .terminal-row{grid-template-columns:1fr 2fr;}
   .navbar{padding:.6rem 1.2rem;}
+  .palace-pillar{width:40px;}
   .crystal-orb{display:none;}
 }
 
@@ -1997,17 +2050,11 @@ body{
   .wall-grid{columns:1;}
   .title-crystal{font-size:clamp(4rem,14vw,10.5rem);}
   .nav-dropdown{width:100%;}
+  .palace-pillar{display:none;}
 }
 </style>
 </head>
 <body>
-
-<!-- ═════════════════════════════════════════════════════════════════════════════
-   VIDEO BACKGROUND
-═════════════════════════════════════════════════════════════════════════════ -->
-<video id="bg-video" autoplay muted loop playsinline>
-  <source src="./background.mp4" type="video/mp4"/>
-</video>
 
 <!-- ═════════════════════════════════════════════════════════════════════════════
    AUDIO
@@ -2027,7 +2074,9 @@ body{
 <!-- ═════════════════════════════════════════════════════════════════════════════
    CRYSTAL PALACE BACKGROUND ELEMENTS
 ═════════════════════════════════════════════════════════════════════════════ -->
-<img id="border-overlay" src="./border.svg" alt="" aria-hidden="true"/>
+<div class="palace-pillar pillar-left"></div>
+<div class="palace-pillar pillar-right"></div>
+<div class="crystal-arch"></div>
 
 <div class="crystal-orb orb-1"></div>
 <div class="crystal-orb orb-2"></div>
@@ -2360,7 +2409,7 @@ body{
           <span class="panel-title" style="color:var(--citrine)">Sponsors &amp; Suppliers</span>
         </div>
         <div class="content-wrapper">
-          <p class="page-eyebrow" style="color:var(--citrine)">✦ &nbsp;Our Generous Sponsors&nbsp; ✦</p>
+          <p class="page-eyebrow" style="color:var(--citrine)">✦ &nbsp;Our Generous Patrons&nbsp; ✦</p>
           <h2 class="page-title">Sponsors &amp; Suppliers</h2>
           <div class="page-divider">
             <span class="pd-line" style="background:linear-gradient(90deg,transparent,var(--citrine))"></span>
@@ -2586,11 +2635,11 @@ const GEMS = [
   {id: 'moodboard', label: 'Mood Board', color: '#d4907c', rgb: '212,144,124', shape: 'rose', delay: '0s', dur: '5.2s', desc: 'The iridescent aesthetic palette and vision of the Crystal Ball.', gem: '🌹'},
   {id: 'gallery', label: 'Gallery', color: '#88d8f0', rgb: '136,216,240', shape: 'aq', delay: '.4s', dur: '4.8s', desc: 'A gallery walk through the memories of April 10.', gem: '💠'},
   {id: 'program', label: 'Program Flow', color: '#6fcfaa', rgb: '111,207,170', shape: 'em', delay: '.8s', dur: '5.5s', desc: 'The full evening itinerary from grand entrance to last dance.', gem: '🟩'},
-  {id: 'committee', label: 'Prom Committee', color: '#b39ddb', rgb: '179,157,219', shape: 'am', delay: '1.2s', dur: '4.6s', desc: 'The architects of magic. The heads and every member.', gem: '💜'},
+  {id: 'committee', label: 'Prom Committee', color: '#b39ddb', rgb: '179,157,219', shape: 'am', delay: '1.2s', dur: '4.6s', desc: 'The architects of magic — every head, every member.', gem: '💜'},
   {id: 'details', label: 'Event Details', color: '#f07ca8', rgb: '240,124,168', shape: 'pink', delay: '1.6s', dur: '5.9s', desc: 'Date, time, venue, and dress code for the night.', gem: '🌸'},
-  {id: 'transparency', label: 'Transparency', color: '#60c0b8', rgb: '96,192,184', shape: 'tour', delay: '2s', dur: '5.3s', desc: 'Full financial transparenc. Every peso openly accounted for.', gem: '🔵'},
-  {id: 'sponsors', label: 'Sponsors', color: '#ffd060', rgb: '255,208,96', shape: 'cit', delay: '2.4s', dur: '4.9s', desc: 'Our generous sponsors who helped make the Crystal Ball a reality.', gem: '⭐'},
-  {id: 'freedom', label: 'Freedom Wall', color: '#ef7070', rgb: '239,112,112', shape: 'ruby', delay: '2.8s', dur: '5.7s', desc: 'Leave your mark. A message, a photo, your name in stars.', gem: '❤️'},
+  {id: 'transparency', label: 'Transparency', color: '#60c0b8', rgb: '96,192,184', shape: 'tour', delay: '2s', dur: '5.3s', desc: 'Full financial transparency — every peso openly accounted for.', gem: '🔵'},
+  {id: 'sponsors', label: 'Sponsors', color: '#ffd060', rgb: '255,208,96', shape: 'cit', delay: '2.4s', dur: '4.9s', desc: 'Our generous patrons who helped make the Crystal Ball a reality.', gem: '⭐'},
+  {id: 'freedom', label: 'Freedom Wall', color: '#ef7070', rgb: '239,112,112', shape: 'ruby', delay: '2.8s', dur: '5.7s', desc: 'Leave your mark — a message, a photo, your name in stars.', gem: '❤️'},
   {id: 'terminal', label: 'Terminal Report', color: '#6ea8f0', rgb: '110,168,240', shape: 'sap', delay: '3.2s', dur: '5s', desc: 'Official post-event terminal report and documents.', gem: '📋'}
 ];
 
@@ -2859,7 +2908,8 @@ function initBackgroundCanvas() {
   function frame(ts) {
     if (ts - lastT > 28) {
       lastT = ts; T++;
-      ctx.clearRect(0, 0, W, H);
+      ctx.fillStyle = '#010008';
+      ctx.fillRect(0, 0, W, H);
       
       const g1 = ctx.createRadialGradient(W * (.5 + .1 * Math.sin(T * .0007)), H * (.35 + .1 * Math.cos(T * .0005)), 10, W * .5, H * .5, W * .8);
       g1.addColorStop(0, `hsla(${270 + 18 * Math.sin(T * .001)},58%,16%,.9)`);
@@ -3100,7 +3150,7 @@ function initNavigation() {
   const homeItem = document.createElement('button');
   homeItem.className = 'nav-item active';
   homeItem.dataset.page = 'home';
-  homeItem.innerHTML = `<div class="ni-gem">${generateCrystalSVG('#d4a843', 'rose', 30)}</div><div class="ni-text"><span class="ni-name">Home</span><span class="ni-desc">Return to homepage</span></div><span class="ni-arrow">›</span>`;
+  homeItem.innerHTML = `<div class="ni-gem">${generateCrystalSVG('#d4a843', 'rose', 30)}</div><div class="ni-text"><span class="ni-name">Home</span><span class="ni-desc">Return to the crystal map</span></div><span class="ni-arrow">›</span>`;
   homeItem.addEventListener('click', () => { goToPage('home'); closeNav(); });
   navItems.appendChild(homeItem);
   
@@ -3351,7 +3401,7 @@ function buildProgramPage() {
     </div>
     <div class="glass-card program-host" style="border-color:rgba(111,207,170,.15)">
       <p class="ph-label" style="color:var(--emerald)">Host &amp; Hostess</p>
-      <p class="ph-names">Heanna Heanna Kiera Perez &amp; Adriel Benedict Zamora</p>
+      <p class="ph-names">Heanna Kate Perez &amp; Adriel Benedict Zamora</p>
     </div>
     <div class="program-list">${items}</div>
   `;
@@ -3438,12 +3488,13 @@ function buildMoodboard() {
   const grid = document.getElementById('mood-grid');
   if (grid.children.length > 0) return;
   
-
-
-
-
-
-   
+  const items = [
+    {l: 'Crystal & Iridescence', c: ['#c8f0ff','#dce8ff','#d4a843','#2c5f8a'], w: 400, h: 340},
+    {l: 'Rose Gold Shimmer', c: ['#d4907c','#e8a89c','#f5d5ce','#6b4c9e'], w: 200, h: 160},
+    {l: 'Deep Sapphire Night', c: ['#05040e','#2c5f8a','#6bb3e0','#c8f0ff'], w: 200, h: 160},
+    {l: 'Emerald & Gold', c: ['#2d7a5f','#d4a843','#05040e','#f0d080'], w: 200, h: 160},
+    {l: 'Amethyst Dreams', c: ['#6b4c9e','#dce8ff','#05040e','#c8f0ff'], w: 380, h: 160}
+  ];
   
   items.forEach(item => {
     const div = document.createElement('div');
